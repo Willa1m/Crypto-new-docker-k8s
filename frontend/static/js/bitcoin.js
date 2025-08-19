@@ -111,9 +111,15 @@ function initializePage() {
 
 // 加载比特币当前价格
 function loadBitcoinPrice() {
-    // 使用绝对URL确保请求到正确的端口
-    const apiUrl = `${window.location.protocol}//${window.location.hostname}:8000/api/latest_prices`;
-    fetch(apiUrl)
+    // 添加时间戳参数绕过缓存
+    const timestamp = new Date().getTime();
+    fetch(`/api/latest_prices?_t=${timestamp}`, {
+        cache: 'no-cache',
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+        }
+    })
         .then(response => {
             if (!response.ok) {
                 throw new Error('网络响应不正常');
@@ -185,9 +191,15 @@ function displayBitcoinPrice(data) {
 function loadBitcoinCharts() {
     setStatus('正在加载图表数据...', 'loading');
     
-    // 使用绝对URL确保请求到正确的端口
-    const apiUrl = `${window.location.protocol}//${window.location.hostname}:8000/api/btc_chart?timeframe=${currentTimeframe}`;
-    fetch(apiUrl)
+    // 添加时间戳参数绕过缓存
+    const timestamp = new Date().getTime();
+    fetch(`/api/btc_data?timeframe=${currentTimeframe}&limit=100&_t=${timestamp}`, {
+        cache: 'no-cache',
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+        }
+    })
         .then(response => {
             if (!response.ok) {
                 throw new Error('网络响应不正常');

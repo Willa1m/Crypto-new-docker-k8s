@@ -4,16 +4,13 @@
 解决API数据延迟和时间窗口边界问题
 """
 
-import logging
 from datetime import datetime, timedelta
 import pytz
 from typing import Dict, Optional, Tuple
+from logger_config import get_crypto_logger
 
 # 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+logger = get_crypto_logger(__name__)
 
 class TimestampManager:
     """智能时间戳管理器"""
@@ -138,7 +135,7 @@ class TimestampManager:
             return datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
             
         except Exception as e:
-            logging.error(f"解析时间戳失败: {timestamp_str}, 错误: {str(e)}")
+            logger.error(f"解析时间戳失败: {timestamp_str}, 错误: {str(e)}")
             return self.get_current_time()
     
     def get_data_freshness(self, data_timestamp: datetime, timeframe: str) -> float:
@@ -176,10 +173,10 @@ class TimestampManager:
         
         status = "新鲜" if is_fresh else "延迟"
         
-        logging.info(f"数据状态 [{timeframe}]: {status}")
-        logging.info(f"  - 数据时间: {data_timestamp}")
-        logging.info(f"  - 延迟时间: {lag}")
-        logging.info(f"  - 质量分数: {quality_score:.2f}")
+        logger.info(f"数据状态 [{timeframe}]: {status}")
+        logger.info(f"  - 数据时间: {data_timestamp}")
+        logger.info(f"  - 延迟时间: {lag}")
+        logger.info(f"  - 质量分数: {quality_score:.2f}")
     
     @staticmethod
     def ensure_utc(dt):

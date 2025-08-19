@@ -1,27 +1,33 @@
-import logging
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+本文件仅用于本地测试和开发调试
+正式部署时请使用 crypto_web_app.py 作为主要入口
+
+功能说明：
+- 提供完整的系统初始化和测试功能
+- 包含交互式菜单用于开发调试
+- 不参与生产环境的后端服务调用
+"""
+
+import signal
+import sys
 import time
+import threading
 import schedule
 from datetime import datetime
-import sys
-import os
 
 # 导入各个模块
-from crypto_db import rebuild_database
-from data_processor import run_data_processing
+from crypto_scraper import scrape_all_crypto_data as run_data_processing
 from crypto_analyzer import run_analysis
-from kline_processor import run_kline_processing
-from crypto_web_app import app
 from realtime_processor import run_realtime_processor
+from crypto_web_app import CryptoWebApp
+from crypto_db import CryptoDatabase, rebuild_database
+from kline_processor import run_kline_processing
+from logger_config import get_crypto_logger
 
 # 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('crypto_system.log'),
-        logging.StreamHandler()
-    ]
-)
+logger = get_crypto_logger(__name__)
 
 class CryptoSystem:
     def __init__(self):
@@ -30,35 +36,35 @@ class CryptoSystem:
     
     def initialize_system(self):
         """初始化系统"""
-        logging.info("=== 加密货币监控系统初始化 ===")
+        logger.info("=== 加密货币监控系统初始化 ===")
         
         # 1. 重建数据库
-        logging.info("步骤 1: 重建数据库结构")
+        logger.info("步骤 1: 重建数据库结构")
         if not rebuild_database():
-            logging.error("数据库重建失败，系统初始化中止")
+            logger.error("数据库重建失败，系统初始化中止")
             return False
         
         # 2. 首次数据抓取和处理
-        logging.info("步骤 2: 首次数据抓取和处理")
+        logger.info("步骤 2: 首次数据抓取和处理")
         if not run_data_processing():
-            logging.error("首次数据处理失败，但系统将继续运行")
+            logger.error("首次数据处理失败，但系统将继续运行")
         
         # 3. 生成初始分析报告
-        logging.info("步骤 3: 生成初始分析报告")
+        logger.info("步骤 3: 生成初始分析报告")
         if not run_analysis():
-            logging.error("初始分析报告生成失败，但系统将继续运行")
+            logger.error("初始分析报告生成失败，但系统将继续运行")
         
         # 4. 生成初始K线数据
-        logging.info("步骤 4: 生成初始K线数据")
+        logger.info("步骤 4: 生成初始K线数据")
         if not run_kline_processing():
-            logging.error("初始K线数据生成失败，但系统将继续运行")
+            logger.error("初始K线数据生成失败，但系统将继续运行")
         
-        logging.info("系统初始化完成")
+        logger.info("系统初始化完成")
         return True
     
     def schedule_tasks(self):
         """设置定时任务"""
-        logging.info("设置定时任务")
+        logger.info("设置定时任务")
         
         # 每5分钟运行一次数据收集
         schedule.every(5).minutes.do(self.run_data_collection_task)
@@ -72,71 +78,71 @@ class CryptoSystem:
         # 每天凌晨2点运行完整处理
         schedule.every().day.at("02:00").do(self.run_full_processing)
         
-        logging.info("定时任务设置完成")
+        logger.info("定时任务设置完成")
     
     def run_realtime_task(self):
         """运行实时数据处理任务"""
-        logging.info("执行实时数据处理任务")
+        logger.info("执行实时数据处理任务")
         try:
             if run_realtime_processor():
-                logging.info("实时数据处理任务完成")
+                logger.info("实时数据处理任务完成")
             else:
-                logging.error("实时数据处理任务失败")
+                logger.error("实时数据处理任务失败")
         except Exception as e:
-            logging.error(f"实时数据处理任务异常: {str(e)}")
+            logger.error(f"实时数据处理任务异常: {str(e)}")
     
     def run_data_collection_task(self):
         """运行数据收集任务"""
-        logging.info("执行定时数据收集任务")
+        logger.info("执行定时数据收集任务")
         try:
             if run_data_processing():
-                logging.info("定时数据收集任务完成")
+                logger.info("定时数据收集任务完成")
             else:
-                logging.error("定时数据收集任务失败")
+                logger.error("定时数据收集任务失败")
         except Exception as e:
-            logging.error(f"定时数据收集任务异常: {str(e)}")
+            logger.error(f"定时数据收集任务异常: {str(e)}")
     
     def run_analysis_task(self):
         """运行分析任务"""
-        logging.info("执行定时分析任务")
+        logger.info("执行定时分析任务")
         try:
             if run_analysis():
-                logging.info("定时分析任务完成")
+                logger.info("定时分析任务完成")
             else:
-                logging.error("定时分析任务失败")
+                logger.error("定时分析任务失败")
         except Exception as e:
-            logging.error(f"定时分析任务异常: {str(e)}")
+            logger.error(f"定时分析任务异常: {str(e)}")
     
     def run_full_processing(self):
         """运行完整处理流程"""
-        logging.info("执行完整处理流程")
+        logger.info("执行完整处理流程")
         try:
             # 数据处理
             if run_data_processing():
-                logging.info("完整数据处理完成")
+                logger.info("完整数据处理完成")
             else:
-                logging.error("完整数据处理失败")
+                logger.error("完整数据处理失败")
             
             # 分析报告
             if run_analysis():
-                logging.info("完整分析报告生成完成")
+                logger.info("完整分析报告生成完成")
             else:
-                logging.error("完整分析报告生成失败")
+                logger.error("完整分析报告生成失败")
                 
         except Exception as e:
-            logging.error(f"完整处理流程异常: {str(e)}")
+            logger.error(f"完整处理流程异常: {str(e)}")
     
     def start_web_server(self):
         """启动Web服务器"""
-        logging.info("启动Web服务器")
+        logger.info("启动Web服务器")
         try:
             app.run(debug=False, host='0.0.0.0', port=5000, threaded=True)
         except Exception as e:
-            logging.error(f"Web服务器启动失败: {str(e)}")
+            logger.error(f"Web服务器启动失败: {str(e)}")
     
     def run_scheduler(self):
         """运行调度器"""
-        logging.info("启动任务调度器")
+        logger.info("启动任务调度器")
         self.is_running = True
         
         while self.is_running:
@@ -144,16 +150,16 @@ class CryptoSystem:
                 schedule.run_pending()
                 time.sleep(30)  # 每30秒检查一次
             except KeyboardInterrupt:
-                logging.info("收到中断信号，正在停止系统...")
+                logger.info("收到中断信号，正在停止系统...")
                 self.is_running = False
                 break
             except Exception as e:
-                logging.error(f"调度器运行异常: {str(e)}")
+                logger.error(f"调度器运行异常: {str(e)}")
                 time.sleep(60)  # 出错后等待1分钟再继续
     
     def stop_system(self):
         """停止系统"""
-        logging.info("正在停止系统...")
+        logger.info("正在停止系统...")
         self.is_running = False
 
 def print_menu():
@@ -297,5 +303,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\n\n👋 程序被用户中断，再见！")
     except Exception as e:
-        logging.error(f"系统运行异常: {str(e)}")
+        logger.error(f"系统运行异常: {str(e)}")
         print(f"❌ 系统运行异常: {str(e)}")

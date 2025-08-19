@@ -1,4 +1,3 @@
-import logging
 import mysql.connector
 from mysql.connector import pooling
 import os
@@ -7,16 +6,10 @@ from timestamp_manager import get_timestamp_manager
 import pandas as pd
 import time
 import os
+from logger_config import get_crypto_logger
 
 # 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('crypto_db.log', encoding='utf-8'),
-        logging.StreamHandler()
-    ]
-)
+logger = get_crypto_logger('database')
 
 class CryptoDatabase:
     def __init__(self):
@@ -66,11 +59,11 @@ class CryptoDatabase:
                 
                 # 创建新的连接池
                 self.connection_pool = mysql.connector.pooling.MySQLConnectionPool(**self.pool_config)
-                logging.info("数据库连接池初始化成功")
+                logger.info("数据库连接池初始化成功")
                 return True
                 
             except mysql.connector.Error as err:
-                logging.error(f"连接池初始化失败 (尝试 {attempt + 1}/{max_retries}): {err}")
+                logger.error(f"连接池初始化失败 (尝试 {attempt + 1}/{max_retries}): {err}")
                 if attempt < max_retries - 1:
                     time.sleep(retry_delay)
                     retry_delay *= 2  # 指数退避
@@ -78,7 +71,7 @@ class CryptoDatabase:
                     self.connection_pool = None
                     return False
             except Exception as e:
-                logging.error(f"连接池初始化异常 (尝试 {attempt + 1}/{max_retries}): {e}")
+                logger.error(f"连接池初始化异常 (尝试 {attempt + 1}/{max_retries}): {e}")
                 if attempt < max_retries - 1:
                     time.sleep(retry_delay)
                     retry_delay *= 2
@@ -87,7 +80,7 @@ class CryptoDatabase:
                     return False
         
         return False
-            # 不抛出异常，允许应用程序继续运行
+        # 不抛出异常，允许应用程序继续运行
     
     def get_connection(self):
         """从连接池获取连接，带重试机制"""
@@ -97,9 +90,9 @@ class CryptoDatabase:
         for attempt in range(max_retries):
             try:
                 if not self.connection_pool:
-                    logging.warning("连接池未初始化，尝试重新初始化")
+                    logger.warning("连接池未初始化，尝试重新初始化")
                     if not self._init_connection_pool():
-                        logging.error("连接池重新初始化失败")
+                        logger.error("连接池重新初始化失败")
                         return None
                 
                 connection = self.connection_pool.get_connection()
@@ -119,13 +112,13 @@ class CryptoDatabase:
                     continue
                         
             except mysql.connector.Error as err:
-                logging.warning(f"获取连接失败 (尝试 {attempt + 1}/{max_retries}): {err}")
+                logger.warning(f"获取连接失败 (尝试 {attempt + 1}/{max_retries}): {err}")
                 if "Too many connections" in str(err):
                     # 如果是连接过多错误，等待更长时间
                     time.sleep(retry_delay * 3)
                     # 尝试重新初始化连接池
                     if attempt == max_retries - 1:
-                        logging.info("尝试重新初始化连接池以解决连接过多问题")
+                        logger.info("尝试重新初始化连接池以解决连接过多问题")
                         self._init_connection_pool()
                 else:
                     time.sleep(retry_delay)
@@ -134,12 +127,12 @@ class CryptoDatabase:
                     retry_delay *= 2
                     
             except Exception as e:
-                logging.warning(f"获取连接异常 (尝试 {attempt + 1}/{max_retries}): {e}")
+                logger.warning(f"获取连接异常 (尝试 {attempt + 1}/{max_retries}): {e}")
                 if attempt < max_retries - 1:
                     time.sleep(retry_delay)
                     retry_delay *= 2
         
-        logging.error("无法获取数据库连接")
+        logger.error("无法获取数据库连接")
         return None
     
     def connect(self):
@@ -147,18 +140,18 @@ class CryptoDatabase:
         try:
             self.connection = self.get_connection()
             if self.connection is None:
-                logging.error("无法获取数据库连接")
+                logger.error("无法获取数据库连接")
                 return False
             self.cursor = self.connection.cursor(buffered=True)
-            logging.info("成功连接到 MariaDB 数据库")
+            logger.info("成功连接到 MariaDB 数据库")
             return True
         except mysql.connector.Error as err:
-            logging.error(f"数据库连接错误: {err}")
+            logger.error(f"数据库连接错误: {err}")
             self.connection = None
             self.cursor = None
             return False
         except Exception as e:
-            logging.error(f"连接过程中发生未知错误: {e}")
+            logger.error(f"连接过程中发生未知错误: {e}")
             self.connection = None
             self.cursor = None
             return False
@@ -171,7 +164,7 @@ class CryptoDatabase:
             try:
                 if self.connection.is_connected():
                     self.connection.close()
-                    logging.info("数据库连接已关闭")
+                    logger.info("数据库连接已关闭")
             except:
                 # 连接可能已经关闭或无效
                 pass
@@ -193,7 +186,7 @@ class CryptoDatabase:
                 
                 if not connection_valid:
                     if not self.connect():
-                        logging.warning(f"重连失败 (尝试 {attempt + 1}/{max_retries})")
+                        logger.warning(f"重连失败 (尝试 {attempt + 1}/{max_retries})")
                         if attempt < max_retries - 1:
                             time.sleep(retry_delay)
                             retry_delay *= 2
@@ -203,7 +196,7 @@ class CryptoDatabase:
                 
                 # 确保cursor存在
                 if not self.cursor:
-                    logging.error("数据库游标未初始化")
+                    logger.error("数据库游标未初始化")
                     return False
                 
                 if params:
@@ -223,7 +216,7 @@ class CryptoDatabase:
                 
                 # 连接相关错误，尝试重连
                 if error_code in (2006, 2013, 2027):  # 连接丢失、服务器断开、数据包错误
-                    logging.warning(f"连接错误 (尝试 {attempt + 1}/{max_retries}): {err}")
+                    logger.warning(f"连接错误 (尝试 {attempt + 1}/{max_retries}): {err}")
                     if attempt < max_retries - 1:
                         time.sleep(retry_delay)
                         retry_delay *= 2
@@ -233,15 +226,15 @@ class CryptoDatabase:
                             pass
                         continue
                 
-                logging.error(f"SQL执行错误: {err}")
+                logger.error(f"SQL执行错误: {err}")
                 if self.connection:
                     self.connection.rollback()
                 return False
             except Exception as e:
-                logging.error(f"未知错误: {e}")
+                logger.error(f"未知错误: {e}")
                 return False
         
-        logging.error(f"查询执行失败，已重试 {max_retries} 次")
+        logger.error(f"查询执行失败，已重试 {max_retries} 次")
         return False
     
     def clear_database(self):
@@ -258,16 +251,16 @@ class CryptoDatabase:
             for table in tables:
                 table_name = table[0]
                 self.cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
-                logging.info(f"删除表: {table_name}")
+                logger.info(f"删除表: {table_name}")
             
             # 重新启用外键检查
             self.cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
             self.connection.commit()
             
-            logging.info("数据库清空完成")
+            logger.info("数据库清空完成")
             return True
         except mysql.connector.Error as err:
-            logging.error(f"清空数据库错误: {err}")
+            logger.error(f"清空数据库错误: {err}")
             return False
     
     def create_tables(self):
@@ -369,9 +362,9 @@ class CryptoDatabase:
         
         for table_name, table_sql in tables:
             if self.execute_query(table_sql):
-                logging.info(f"成功创建表: {table_name}")
+                logger.info(f"成功创建表: {table_name}")
             else:
-                logging.error(f"创建表失败: {table_name}")
+                logger.error(f"创建表失败: {table_name}")
                 return False
         
         return True
@@ -403,7 +396,7 @@ class CryptoDatabase:
         }
         
         if timeframe not in table_map:
-            logging.error(f"不支持的时间范围: {timeframe}")
+            logger.error(f"不支持的时间范围: {timeframe}")
             return False
         
         table_name = table_map[timeframe]
@@ -444,7 +437,7 @@ class CryptoDatabase:
                 cursor.close()
                 return result
             except Exception as e:
-                logging.error(f"使用连接池执行查询失败: {str(e)}")
+                logger.error(f"使用连接池执行查询失败: {str(e)}")
                 return []
         else:
             # 使用原有的execute_query方法（向后兼容）
@@ -490,7 +483,7 @@ class CryptoDatabase:
                 cursor.close()
                 return result
             except Exception as e:
-                logging.error(f"使用连接池执行查询失败: {str(e)}")
+                logger.error(f"使用连接池执行查询失败: {str(e)}")
                 return []
         else:
             # 使用原有的execute_query方法（向后兼容）
@@ -661,12 +654,12 @@ def rebuild_database():
     
     try:
         # 清空数据库
-        logging.info("开始清空数据库...")
+        logger.info("开始清空数据库...")
         if not db.clear_database():
             return False
         
         # 创建表结构
-        logging.info("开始创建表结构...")
+        logger.info("开始创建表结构...")
         if not db.create_tables():
             return False
         
@@ -678,19 +671,19 @@ def rebuild_database():
         
         for symbol, name in cryptocurrencies.items():
             if not db.insert_crypto_info(symbol, name):
-                logging.error(f"插入加密货币信息失败: {symbol}")
+                logger.error(f"插入加密货币信息失败: {symbol}")
                 return False
-            logging.info(f"成功插入加密货币信息: {name} ({symbol})")
+            logger.info(f"成功插入加密货币信息: {name} ({symbol})")
         
-        logging.info("数据库重建完成")
+        logger.info("数据库重建完成")
         return True
         
     finally:
         db.disconnect()
 
 if __name__ == "__main__":
-    logging.info("开始重建数据库")
+    logger.info("开始重建数据库")
     if rebuild_database():
-        logging.info("数据库重建成功")
+        logger.info("数据库重建成功")
     else:
-        logging.error("数据库重建失败")
+        logger.error("数据库重建失败")

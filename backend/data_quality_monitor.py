@@ -4,22 +4,15 @@
 监控数据延迟、质量分数和系统健康状态
 """
 
-import logging
 import time
 from datetime import datetime, timedelta
 from crypto_db import CryptoDatabase
 from timestamp_manager import get_timestamp_manager
 import json
+from logger_config import get_crypto_logger
 
 # 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('data_quality_monitor.log'),
-        logging.StreamHandler()
-    ]
-)
+logger = get_crypto_logger(__name__)
 
 class DataQualityMonitor:
     def __init__(self):
@@ -29,7 +22,7 @@ class DataQualityMonitor:
     def check_data_freshness(self):
         """检查数据新鲜度"""
         if not self.db.connect():
-            logging.error("数据库连接失败")
+            logger.error("数据库连接失败")
             return None
             
         try:
@@ -62,19 +55,19 @@ class DataQualityMonitor:
                         'status': 'healthy' if quality_score >= 0.7 else 'warning' if quality_score >= 0.5 else 'critical'
                     }
                     
-                    logging.info(f"{timeframe}级数据状态: {results[timeframe]['status']} "
+                    logger.info(f"{timeframe}级数据状态: {results[timeframe]['status']} "
                                f"(新鲜度: {freshness:.1f}分钟, 质量分数: {quality_score:.2f})")
                 else:
                     results[timeframe] = {
                         'status': 'no_data',
                         'message': '无数据'
                     }
-                    logging.warning(f"{timeframe}级数据: 无数据")
+                    logger.warning(f"{timeframe}级数据: 无数据")
             
             return results
             
         except Exception as e:
-            logging.error(f"检查数据新鲜度时发生错误: {str(e)}")
+            logger.error(f"检查数据新鲜度时发生错误: {str(e)}")
             return None
         finally:
             self.db.disconnect()
@@ -120,46 +113,46 @@ class DataQualityMonitor:
                         'gap_rate': gap_count / (len(timestamps) - 1) if len(timestamps) > 1 else 0
                     }
                     
-                    logging.info(f"{timeframe}级数据缺口率: {gaps[timeframe]['gap_rate']:.2%}")
+                    logger.info(f"{timeframe}级数据缺口率: {gaps[timeframe]['gap_rate']:.2%}")
                 else:
                     gaps[timeframe] = {'status': 'insufficient_data'}
             
             return gaps
             
         except Exception as e:
-            logging.error(f"检查数据缺口时发生错误: {str(e)}")
+            logger.error(f"检查数据缺口时发生错误: {str(e)}")
             return None
         finally:
             self.db.disconnect()
     
     def generate_health_report(self):
         """生成健康报告"""
-        logging.info("=== 数据质量健康报告 ===")
+        logger.info("=== 数据质量健康报告 ===")
         
         # 检查数据新鲜度
         freshness_results = self.check_data_freshness()
         if freshness_results:
-            logging.info("数据新鲜度检查:")
+            logger.info("数据新鲜度检查:")
             for timeframe, data in freshness_results.items():
                 if data.get('status') == 'no_data':
-                    logging.warning(f"  {timeframe}: {data['message']}")
+                    logger.warning(f"  {timeframe}: {data['message']}")
                 else:
-                    logging.info(f"  {timeframe}: {data['status']} "
+                    logger.info(f"  {timeframe}: {data['status']} "
                                f"(延迟: {data['freshness_minutes']:.1f}分钟)")
         
         # 检查数据缺口
         gap_results = self.check_data_gaps()
         if gap_results:
-            logging.info("数据完整性检查:")
+            logger.info("数据完整性检查:")
             for timeframe, data in gap_results.items():
                 if data.get('status') == 'insufficient_data':
-                    logging.warning(f"  {timeframe}: 数据不足")
+                    logger.warning(f"  {timeframe}: 数据不足")
                 else:
-                    logging.info(f"  {timeframe}: 缺口率 {data['gap_rate']:.2%}")
+                    logger.info(f"  {timeframe}: 缺口率 {data['gap_rate']:.2%}")
         
         # 生成总体健康状态
         overall_status = self._calculate_overall_health(freshness_results, gap_results)
-        logging.info(f"总体健康状态: {overall_status}")
+        logger.info(f"总体健康状态: {overall_status}")
         
         return {
             'timestamp': datetime.now(),
@@ -197,17 +190,17 @@ class DataQualityMonitor:
     
     def run_continuous_monitoring(self, interval_seconds=60):
         """运行连续监控"""
-        logging.info(f"开始连续监控，检查间隔: {interval_seconds}秒")
+        logger.info(f"开始连续监控，检查间隔: {interval_seconds}秒")
         
         while True:
             try:
                 self.generate_health_report()
                 time.sleep(interval_seconds)
             except KeyboardInterrupt:
-                logging.info("监控已停止")
+                logger.info("监控已停止")
                 break
             except Exception as e:
-                logging.error(f"监控过程中发生错误: {str(e)}")
+                logger.error(f"监控过程中发生错误: {str(e)}")
                 time.sleep(interval_seconds)
 
 def run_single_check():

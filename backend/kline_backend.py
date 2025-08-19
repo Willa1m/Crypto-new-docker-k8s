@@ -4,16 +4,16 @@ import numpy as np
 import json
 import os
 import glob
-import logging
 from datetime import datetime, timedelta
 from crypto_db import CryptoDatabase
 from timestamp_manager import get_timestamp_manager, get_unified_timestamp, get_unified_datetime, get_unified_iso
+from logger_config import get_crypto_logger
 
 class KlineBackend:
     """K线数据后端处理类 - 只从数据库获取真实数据"""
     
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_crypto_logger('kline_backend')
         self.db = CryptoDatabase()
         self.timestamp_manager = get_timestamp_manager()
     
@@ -217,10 +217,9 @@ class KlineBackend:
             
             # 如果数据库没有数据，尝试从处理过的文件读取
             if not kline_data:
-                # 获取项目根目录路径
+                # 获取backend目录路径
                 current_dir = os.path.dirname(os.path.abspath(__file__))
-                project_root = os.path.dirname(current_dir)
-                data_dir = os.path.join(project_root, 'data', 'kline_data')
+                data_dir = os.path.join(current_dir, 'data', 'kline_data')
                 
                 pattern = os.path.join(data_dir, f"{symbol.upper()}_{timeframe}_kline_*.json")
                 matching_files = glob.glob(pattern)

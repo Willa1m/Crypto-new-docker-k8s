@@ -1,20 +1,12 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-import logging
 import os
 import json
 from crypto_db import CryptoDatabase
+from logger_config import get_crypto_logger
 
-# 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('kline_processor.log'),
-        logging.StreamHandler()
-    ]
-)
+logger = get_crypto_logger('kline_processor')
 
 class KlineProcessor:
     """K线数据处理器"""
@@ -22,10 +14,9 @@ class KlineProcessor:
     def __init__(self):
         self.db = CryptoDatabase()
         
-        # 获取项目根目录路径
+        # 获取backend目录路径
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        project_root = os.path.dirname(current_dir)
-        self.output_dir = os.path.join(project_root, "data", "kline_data")
+        self.output_dir = os.path.join(current_dir, "data", "kline_data")
         
         self.ensure_output_dir()
     
@@ -33,19 +24,19 @@ class KlineProcessor:
         """确保输出目录存在"""
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
-            logging.info(f"创建K线数据输出目录: {self.output_dir}")
+            logger.info(f"创建K线数据输出目录: {self.output_dir}")
     
     def get_kline_data(self, symbol, timeframe, limit=100):
         """获取K线数据"""
         if not self.db.connect():
-            logging.error("数据库连接失败")
+            logger.error("数据库连接失败")
             return []
         
         try:
             # 从数据库获取历史数据
             data = self.db.get_historical_data(timeframe, symbol, limit)
             if not data:
-                logging.warning(f"没有找到 {symbol} 的 {timeframe} 级数据")
+                logger.warning(f"没有找到 {symbol} 的 {timeframe} 级数据")
                 return []
             
             # 转换为K线格式
@@ -65,11 +56,11 @@ class KlineProcessor:
             # 按时间排序
             kline_data.sort(key=lambda x: x['date'])
             
-            logging.info(f"成功获取 {symbol} 的 {timeframe} 级K线数据，共 {len(kline_data)} 条")
+            logger.info(f"成功获取 {symbol} 的 {timeframe} 级K线数据，共 {len(kline_data)} 条")
             return kline_data
             
         except Exception as e:
-            logging.error(f"获取K线数据时出错: {str(e)}")
+            logger.error(f"获取K线数据时出错: {str(e)}")
             return []
         finally:
             self.db.disconnect()
@@ -115,10 +106,10 @@ class KlineProcessor:
             kdj_data = self.calculate_kdj(highs, lows, closes, 9, 3, 3)
             indicators.update(kdj_data)
             
-            logging.info("技术指标计算完成")
+            logger.info("技术指标计算完成")
             
         except Exception as e:
-            logging.error(f"计算技术指标时出错: {str(e)}")
+            logger.error(f"计算技术指标时出错: {str(e)}")
         
         return indicators
     
@@ -360,21 +351,21 @@ class KlineProcessor:
             with open(filepath, 'w', encoding='utf-8') as f:
                 json.dump(save_data, f, ensure_ascii=False, indent=2)
             
-            logging.info(f"K线数据已保存到: {filepath}")
+            logger.info(f"K线数据已保存到: {filepath}")
             return filepath
             
         except Exception as e:
-            logging.error(f"保存K线数据时出错: {str(e)}")
+            logger.error(f"保存K线数据时出错: {str(e)}")
             return None
     
     def process_and_save_kline(self, symbol, timeframe, limit=100):
         """处理并保存K线数据"""
-        logging.info(f"开始处理 {symbol} 的 {timeframe} 级K线数据")
+        logger.info(f"开始处理 {symbol} 的 {timeframe} 级K线数据")
         
         # 获取K线数据
         kline_data = self.get_kline_data(symbol, timeframe, limit)
         if not kline_data:
-            logging.warning(f"没有获取到 {symbol} 的K线数据")
+            logger.warning(f"没有获取到 {symbol} 的K线数据")
             return None
         
         # 计算技术指标
@@ -407,16 +398,16 @@ def run_kline_processing():
                 result = processor.process_and_save_kline(symbol, timeframe, 100)
                 if result:
                     results.append(result)
-                    logging.info(f"成功处理 {symbol} {timeframe} 级K线数据")
+                    logger.info(f"成功处理 {symbol} {timeframe} 级K线数据")
                 else:
-                    logging.warning(f"处理 {symbol} {timeframe} 级K线数据失败")
+                    logger.warning(f"处理 {symbol} {timeframe} 级K线数据失败")
             except Exception as e:
-                logging.error(f"处理 {symbol} {timeframe} 级K线数据时出错: {str(e)}")
+                logger.error(f"处理 {symbol} {timeframe} 级K线数据时出错: {str(e)}")
     
-    logging.info(f"K线数据处理完成，共处理 {len(results)} 个数据集")
+    logger.info(f"K线数据处理完成，共处理 {len(results)} 个数据集")
     return results
 
 if __name__ == "__main__":
-    logging.info("启动K线数据处理程序")
+    logger.info("启动K线数据处理程序")
     results = run_kline_processing()
-    logging.info("K线数据处理程序执行完成")
+    logger.info("K线数据处理程序执行完成")

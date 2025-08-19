@@ -2,24 +2,16 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime, timedelta
-import logging
 import os
 from crypto_db import CryptoDatabase
 import json
+from logger_config import get_crypto_logger
 
 # 配置中文字体
 plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei']
 plt.rcParams['axes.unicode_minus'] = False
 
-# 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('crypto_analyzer.log'),
-        logging.StreamHandler()
-    ]
-)
+logger = get_crypto_logger('analyzer')
 
 class CryptoAnalyzer:
     def __init__(self):
@@ -40,7 +32,7 @@ class CryptoAnalyzer:
         """确保输出目录存在"""
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir, exist_ok=True)
-            logging.info(f"创建输出目录: {self.output_dir}")
+            logger.info(f"创建输出目录: {self.output_dir}")
     
     def get_price_data(self, timeframe, symbol=None, limit=100):
         """从数据库获取价格数据"""
@@ -131,7 +123,7 @@ class CryptoAnalyzer:
         plt.savefig(filepath, dpi=300, bbox_inches='tight')
         plt.close()
         
-        logging.info(f"价格图表已保存: {filepath}")
+        logger.info(f"价格图表已保存: {filepath}")
         return filename
     
     def create_comparison_chart(self, symbols=['BTC', 'ETH'], timeframe='hour', limit=24):
@@ -204,7 +196,7 @@ class CryptoAnalyzer:
         plt.savefig(filepath, dpi=300, bbox_inches='tight')
         plt.close()
         
-        logging.info(f"对比图表已保存: {filepath}")
+        logger.info(f"对比图表已保存: {filepath}")
         return filename
     
     def calculate_statistics(self, timeframe, symbol, limit=100):
@@ -276,39 +268,39 @@ class CryptoAnalyzer:
         with open(report_file, 'w', encoding='utf-8') as f:
             json.dump(report, f, ensure_ascii=False, indent=2)
         
-        logging.info(f"分析报告已保存: {report_file}")
+        logger.info(f"分析报告已保存: {report_file}")
         return report
 
 def run_analysis():
     """运行分析程序"""
-    logging.info("开始加密货币数据分析")
+    logger.info("开始加密货币数据分析")
     
     analyzer = CryptoAnalyzer()
     report = analyzer.generate_analysis_report()
     
     if report:
-        logging.info("=== 分析报告摘要 ===")
+        logger.info("=== 分析报告摘要 ===")
         
         # 显示最新价格
         if report['latest_prices']:
-            logging.info("最新价格:")
+            logger.info("最新价格:")
             for price_info in report['latest_prices']:
-                logging.info(f"  {price_info['name']}: ${price_info['price']:,.2f} "
+                logger.info(f"  {price_info['name']}: ${price_info['price']:,.2f} "
                            f"(24h: {price_info['change_24h']:+.2f}%)")
         
         # 显示统计摘要
         for timeframe in ['minute', 'hour', 'day']:
             if timeframe in report['statistics']:
-                logging.info(f"\n{timeframe}级数据统计:")
+                logger.info(f"\n{timeframe}级数据统计:")
                 for symbol, stats in report['statistics'][timeframe].items():
-                    logging.info(f"  {symbol}: 当前${stats['current_price']:,.2f}, "
+                    logger.info(f"  {symbol}: 当前${stats['current_price']:,.2f}, "
                                f"变化{stats['price_change_percent']:+.2f}%, "
                                f"数据点{stats['data_points']}个")
         
-        logging.info("数据分析完成")
+        logger.info("数据分析完成")
         return True
     else:
-        logging.error("数据分析失败")
+        logger.error("数据分析失败")
         return False
 
 if __name__ == "__main__":

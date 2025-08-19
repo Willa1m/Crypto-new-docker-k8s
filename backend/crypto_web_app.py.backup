@@ -1,19 +1,10 @@
 from flask import Flask, render_template, jsonify, request
-from flask_cors import CORS
-from datetime import datetime, timedelta
+from datetime import datetime
 import os
-import threading
-import schedule
-import time
 from crypto_db import CryptoDatabase
 from crypto_analyzer import CryptoAnalyzer
 from simple_redis_manager import CryptoCacheManager
 from logger_config import get_crypto_logger
-# 导入后台处理模块
-from crypto_scraper import scrape_all_crypto_data as run_data_processing
-from crypto_analyzer import run_analysis
-from realtime_processor import run_realtime_processor
-from kline_processor import run_kline_processing
 
 # 配置日志
 logger = get_crypto_logger(__name__)
@@ -24,19 +15,18 @@ class CryptoWebApp:
         current_dir = os.path.dirname(os.path.abspath(__file__))
         
         # 在Docker环境中，使用绝对路径
-        if os.path.exists('/app/frontend/templates'):
-            template_folder = '/app/frontend/templates'
-            static_folder = '/app/frontend/static'
+        if os.path.exists('/app/templates'):
+            template_folder = '/app/templates'
+            static_folder = '/app/static'
         else:
             # 本地开发环境
             project_root = os.path.dirname(current_dir)
-            template_folder = os.path.join(project_root, 'frontend', 'templates')
-            static_folder = os.path.join(project_root, 'frontend', 'static')
+            template_folder = os.path.join(project_root, 'templates')
+            static_folder = os.path.join(project_root, 'static')
         
         self.app = Flask(__name__, 
                         template_folder=template_folder,
                         static_folder=static_folder)
-        CORS(self.app)
         self.db = CryptoDatabase()
         self.analyzer = CryptoAnalyzer()
         
@@ -47,43 +37,25 @@ class CryptoWebApp:
         except Exception as e:
             logger.warning(f"Redis缓存管理器初始化失败: {e}")
             self.redis_manager = None
-        
-        # 初始化后台调度器
-        self.is_running = False
-        self.scheduler_thread = None
-        
+            
         self.setup_routes()
     
     def setup_routes(self):
         """设置路由"""
-        # 页面路由
         self.app.route('/')(self.index)
         self.app.route('/bitcoin')(self.bitcoin)
         self.app.route('/ethereum')(self.ethereum)
         self.app.route('/kline')(self.kline)
-        
-        # API路由
-        self.app.route('/api/health', methods=['GET'])(self.api_health_check)
         self.app.route('/api/latest_prices')(self.api_latest_prices)
-        self.app.route('/api/price_history')(self.api_price_history)
         self.app.route('/api/chart_data')(self.api_chart_data)
-        self.app.route('/api/btc_chart')(self.api_btc_chart)
-        self.app.route('/api/eth_chart')(self.api_eth_chart)
-        self.app.route('/api/kline_chart')(self.api_kline_chart)
-        self.app.route('/api/analysis')(self.api_analysis)
         self.app.route('/api/btc_data')(self.api_btc_data)
         self.app.route('/api/eth_data')(self.api_eth_data)
         self.app.route('/api/kline_data')(self.api_kline_data)
         self.app.route('/api/refresh_charts', methods=['POST'])(self.api_refresh_charts)
-        self.app.route('/api/system/status')(self.api_system_status)
         
         # 缓存管理API
         self.app.route('/api/cache/stats')(self.api_cache_stats)
         self.app.route('/api/cache/clear', methods=['POST'])(self.api_clear_cache)
-        
-        # 错误处理
-        self.app.errorhandler(404)(self.not_found)
-        self.app.errorhandler(500)(self.internal_error)
     
     def process_chart_data(self, data, symbol):
         """处理图表数据，计算三条曲线：价格、成交量、波动率"""
@@ -391,50 +363,20 @@ class CryptoWebApp:
         """K线图页面"""
         return render_template('kline.html')
     
-    def api_health_check(self):
-        """健康检查端点"""
-        return jsonify({'status': 'healthy', 'timestamp': datetime.now().isoformat()})
-    
     def api_latest_prices(self):
-        """获取最新价格API"""
+        """API: 获取最新价格"""
         try:
-            # 先从缓存获取
-            if self.redis_manager:
-                btc_price = self.redis_manager.get_price('BTC')
-                eth_price = self.redis_manager.get_price('ETH')
-                
-                if btc_price and eth_price:
-                    return jsonify({'success': True, 'data': [btc_price, eth_price]})
-            
-            # 从数据库获取
             prices = self.get_latest_prices()
             return jsonify({
                 'success': True,
                 'data': prices
             })
         except Exception as e:
-            logger.error(f"获取最新价格失败: {e}")
+            logger.error(f"API获取最新价格时出错: {str(e)}")
             return jsonify({
                 'success': False,
                 'error': str(e)
             }), 500
-    
-    def api_price_history(self):
-        """获取价格历史"""
-        try:
-            crypto = request.args.get('crypto', 'BTC')
-            timeframe = request.args.get('timeframe', '24h')
-            
-            # 从数据库获取价格历史
-            if self.db.connect():
-                history = self.db.get_price_history(crypto, timeframe)
-                self.db.disconnect()
-                return jsonify({'success': True, 'data': history if history else []})
-            else:
-                return jsonify({'success': False, 'error': '数据库连接失败'}), 500
-        except Exception as e:
-            logger.error(f"获取价格历史失败: {e}")
-            return jsonify({'success': False, 'error': str(e)}), 500
     
     def api_chart_data(self):
         """API: 获取图表数据"""
@@ -454,96 +396,6 @@ class CryptoWebApp:
                 'success': False,
                 'error': str(e)
             }), 500
-    
-    def api_btc_chart(self):
-        """获取BTC图表数据"""
-        try:
-            chart_data = self.get_chart_data('hour', 'BTC', 100)
-            return jsonify({'success': True, 'data': chart_data})
-        except Exception as e:
-            logger.error(f"获取BTC图表数据失败: {e}")
-            return jsonify({'success': False, 'error': str(e)}), 500
-    
-    def api_eth_chart(self):
-        """获取ETH图表数据"""
-        try:
-            chart_data = self.get_chart_data('hour', 'ETH', 100)
-            return jsonify({'success': True, 'data': chart_data})
-        except Exception as e:
-            logger.error(f"获取ETH图表数据失败: {e}")
-            return jsonify({'success': False, 'error': str(e)}), 500
-    
-    def api_kline_chart(self):
-        """获取K线图表数据"""
-        try:
-            symbol = request.args.get('symbol', 'BTC')
-            timeframe = request.args.get('timeframe', 'hour')
-            
-            if self.db.connect():
-                kline_data = self.db.get_kline_data(symbol, timeframe)
-                self.db.disconnect()
-                return jsonify({'success': True, 'data': kline_data if kline_data else []})
-            else:
-                return jsonify({'success': False, 'error': '数据库连接失败'}), 500
-        except Exception as e:
-            logger.error(f"获取K线数据失败: {e}")
-            return jsonify({'success': False, 'error': str(e)}), 500
-    
-    def api_analysis(self):
-        """获取分析报告"""
-        try:
-            if self.db.connect():
-                analysis_data = self.db.get_analysis_data()
-                self.db.disconnect()
-                return jsonify({'success': True, 'data': analysis_data if analysis_data else {}})
-            else:
-                return jsonify({'success': False, 'error': '数据库连接失败'}), 500
-        except Exception as e:
-            logger.error(f"获取分析数据失败: {e}")
-            return jsonify({'success': False, 'error': str(e)}), 500
-    
-    def api_system_status(self):
-        """获取系统状态"""
-        try:
-            # 检查数据库连接
-            db_status = 'disconnected'
-            if self.db:
-                try:
-                    if self.db.connect():
-                        db_status = 'connected'
-                        self.db.disconnect()
-                except Exception:
-                    db_status = 'disconnected'
-            
-            # 检查Redis连接
-            redis_status = 'disconnected'
-            if self.redis_manager:
-                try:
-                    # 检查Redis管理器是否有有效连接
-                    if hasattr(self.redis_manager, 'redis') and self.redis_manager.redis:
-                        self.redis_manager.redis.ping()
-                        redis_status = 'connected'
-                except Exception:
-                    redis_status = 'disconnected'
-            
-            status = {
-                'database': db_status,
-                'redis': redis_status,
-                'timestamp': datetime.now().isoformat()
-            }
-            return jsonify({'success': True, 'data': status})
-        except Exception as e:
-            logger.error(f"获取系统状态失败: {e}")
-            return jsonify({'success': False, 'error': str(e)}), 500
-    
-    def not_found(self, error):
-        """404错误处理"""
-        return jsonify({'error': 'Not Found', 'message': 'The requested resource was not found'}), 404
-    
-    def internal_error(self, error):
-        """500错误处理"""
-        logger.error(f"Internal server error: {error}")
-        return jsonify({'error': 'Internal Server Error', 'message': 'An internal error occurred'}), 500
     
     def api_btc_data(self):
         """API: 获取比特币数据（三条曲线）"""
@@ -717,111 +569,6 @@ class CryptoWebApp:
                 'error': str(e)
             }), 500
     
-    def schedule_tasks(self):
-        """设置定时任务"""
-        logger.info("设置定时任务")
-        
-        # 每5分钟运行一次数据收集
-        schedule.every(5).minutes.do(self.run_data_collection_task)
-        
-        # 每30秒运行一次实时数据处理
-        schedule.every(30).seconds.do(self.run_realtime_task)
-        
-        # 每分钟运行一次分析
-        schedule.every().minute.do(self.run_analysis_task)
-        
-        # 每天凌晨2点运行完整处理
-        schedule.every().day.at("02:00").do(self.run_full_processing)
-        
-        logger.info("定时任务设置完成")
-    
-    def run_realtime_task(self):
-        """运行实时数据处理任务"""
-        logger.info("执行实时数据处理任务")
-        try:
-            if run_realtime_processor():
-                logger.info("实时数据处理任务完成")
-            else:
-                logger.error("实时数据处理任务失败")
-        except Exception as e:
-            logger.error(f"实时数据处理任务异常: {str(e)}")
-    
-    def run_data_collection_task(self):
-        """运行数据收集任务"""
-        logger.info("执行定时数据收集任务")
-        try:
-            if run_data_processing():
-                logger.info("定时数据收集任务完成")
-            else:
-                logger.error("定时数据收集任务失败")
-        except Exception as e:
-            logger.error(f"定时数据收集任务异常: {str(e)}")
-    
-    def run_analysis_task(self):
-        """运行分析任务"""
-        logger.info("执行定时分析任务")
-        try:
-            if run_analysis():
-                logger.info("定时分析任务完成")
-            else:
-                logger.error("定时分析任务失败")
-        except Exception as e:
-            logger.error(f"定时分析任务异常: {str(e)}")
-    
-    def run_full_processing(self):
-        """运行完整处理流程"""
-        logger.info("执行完整处理流程")
-        try:
-            # 数据处理
-            if run_data_processing():
-                logger.info("完整数据处理完成")
-            else:
-                logger.error("完整数据处理失败")
-            
-            # 分析报告
-            if run_analysis():
-                logger.info("完整分析报告生成完成")
-            else:
-                logger.error("完整分析报告生成失败")
-                
-        except Exception as e:
-            logger.error(f"完整处理流程异常: {str(e)}")
-    
-    def run_scheduler(self):
-        """运行调度器"""
-        logger.info("启动任务调度器")
-        self.is_running = True
-        
-        while self.is_running:
-            try:
-                schedule.run_pending()
-                time.sleep(30)  # 每30秒检查一次
-            except KeyboardInterrupt:
-                logger.info("收到中断信号，正在停止系统...")
-                self.is_running = False
-                break
-            except Exception as e:
-                logger.error(f"调度器运行异常: {str(e)}")
-                time.sleep(60)  # 出错后等待1分钟再继续
-    
-    def start_background_scheduler(self):
-        """启动后台调度器"""
-        if not self.scheduler_thread or not self.scheduler_thread.is_alive():
-            self.schedule_tasks()
-            self.scheduler_thread = threading.Thread(target=self.run_scheduler)
-            self.scheduler_thread.daemon = True
-            self.scheduler_thread.start()
-            logger.info("后台调度器已启动")
-        else:
-            logger.info("后台调度器已在运行中")
-    
-    def stop_background_scheduler(self):
-        """停止后台调度器"""
-        self.is_running = False
-        if self.scheduler_thread and self.scheduler_thread.is_alive():
-            self.scheduler_thread.join(timeout=5)
-            logger.info("后台调度器已停止")
-    
     def get_local_ip(self):
         """获取本机局域网IP地址"""
         try:
@@ -836,7 +583,7 @@ class CryptoWebApp:
         except Exception:
             return "127.0.0.1"
     
-    def run(self, debug=True, host='0.0.0.0', port=5000, enable_scheduler=True):
+    def run(self, debug=True, host='0.0.0.0', port=5000):
         """运行应用"""
         local_ip = self.get_local_ip()
         
@@ -850,30 +597,12 @@ class CryptoWebApp:
         print(f"   1. 同一局域网用户可直接访问: http://{local_ip}:{port}")
         print(f"   2. 手机连接同一WiFi后访问: http://{local_ip}:{port}")
         print("   3. 外网访问需要配置路由器端口转发")
-        
-        if enable_scheduler:
-            print("\n🔄 后台服务状态:")
-            print("   ✅ 实时数据处理: 每30秒执行")
-            print("   ✅ 数据收集任务: 每5分钟执行")
-            print("   ✅ 分析任务: 每小时执行")
-            print("   ✅ 完整处理: 每天凌晨2点执行")
-        
         print("="*60)
         
         logger.info(f"启动Web应用，本地地址: http://127.0.0.1:{port}")
         logger.info(f"启动Web应用，局域网地址: http://{local_ip}:{port}")
         
-        # 启动后台调度器
-        if enable_scheduler:
-            self.start_background_scheduler()
-        
-        try:
-            self.app.run(debug=debug, host=host, port=port)
-        except KeyboardInterrupt:
-            logger.info("收到中断信号，正在停止系统...")
-        finally:
-            if enable_scheduler:
-                self.stop_background_scheduler()
+        self.app.run(debug=debug, host=host, port=port)
 
 # 创建全局应用实例，供其他模块导入
 crypto_app = CryptoWebApp()

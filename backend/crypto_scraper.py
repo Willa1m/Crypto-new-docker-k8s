@@ -1,20 +1,13 @@
 import requests
 import pandas as pd
 import time
-import logging
 from datetime import datetime
 import os
 import random
+from logger_config import get_crypto_logger
 
 # 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('crypto_scraper.log'),
-        logging.StreamHandler()
-    ]
-)
+logger = get_crypto_logger('scraper')
 
 # 定义headers
 headers = {
@@ -37,7 +30,7 @@ CRYPTOCURRENCIES = {
 }
 
 # API配置
-API_KEY = '6c2b58bddb3f3034bf717c67253b0e23cfe7472e35dd060edcbda20d169996d6'
+API_KEY = 'daa73de7026e60283b77ac5056c9420ba57b34e5e72caffb0624dd093668c800'
 COINDESK_API_BASE_URL = "https://data-api.coindesk.com/index/cc/v1"
 COINDESK_API_ENDPOINTS = {
     'current': '/latest/tick',
@@ -60,11 +53,11 @@ def handle_ratelimit(response, retry_count=0):
     """处理API速率限制"""
     if response.status_code == 429:  # Too Many Requests
         if retry_count >= RATELIMIT_RETRY_MAX:
-            logging.error(f"达到最大重试次数 ({RATELIMIT_RETRY_MAX})，放弃请求")
+            logger.error(f"达到最大重试次数 ({RATELIMIT_RETRY_MAX})，放弃请求")
             return False
         
         wait_time = RATELIMIT_RETRY_DELAY * (2 ** retry_count)
-        logging.warning(f"触发速率限制，等待{wait_time}秒后重试")
+        logger.warning(f"触发速率限制，等待{wait_time}秒后重试")
         time.sleep(wait_time)
         return True
     return False
@@ -83,7 +76,7 @@ def get_crypto_price_coindesk(symbol, name):
                 'apply_mapping': COINDESK_API_PARAMS['apply_mapping']
             }
             
-            logging.info(f"正在请求 {name} ({symbol}) 价格")
+            logger.info(f"正在请求 {name} ({symbol}) 价格")
             time.sleep(random.uniform(0.5, 1))
             
             headers_with_auth = headers.copy()
@@ -97,15 +90,15 @@ def get_crypto_price_coindesk(symbol, name):
             
             response.raise_for_status()
             data = response.json()
-            logging.debug(f"API响应数据: {data}")
+            logger.debug(f"API响应数据: {data}")
             
             if not data or 'Data' not in data:
-                logging.warning(f"API响应格式不符合预期: {data}")
+                logger.warning(f"API响应格式不符合预期: {data}")
                 return None
             
             instrument_key = f"{symbol}-USD"
             if instrument_key not in data['Data']:
-                logging.warning(f"未找到{symbol}的价格数据")
+                logger.warning(f"未找到{symbol}的价格数据")
                 return None
             
             latest_data = data['Data'][instrument_key]
@@ -118,16 +111,16 @@ def get_crypto_price_coindesk(symbol, name):
                 'timestamp': datetime.fromtimestamp(latest_data['VALUE_LAST_UPDATE_TS'])
             }
             
-            logging.info(f"{name} ({symbol}) 当前价格: ${result['price']:,.2f}")
+            logger.info(f"{name} ({symbol}) 当前价格: ${result['price']:,.2f}")
             return result
                 
         except Exception as e:
             retry_count += 1
             wait_time = RETRY_DELAY * (2 ** retry_count)
-            logging.error(f"请求异常: {str(e)}，等待 {wait_time} 秒后重试...")
+            logger.error(f"请求异常: {str(e)}，等待 {wait_time} 秒后重试...")
             time.sleep(wait_time)
     
-    logging.error(f"达到最大重试次数 ({MAX_RETRIES})，放弃获取 {name} ({symbol}) 价格")
+    logger.error(f"达到最大重试次数 ({MAX_RETRIES})，放弃获取 {name} ({symbol}) 价格")
     return None
 
 def get_historical_data_coindesk(symbol, timeframe="day"):
@@ -137,7 +130,7 @@ def get_historical_data_coindesk(symbol, timeframe="day"):
     while retry_count < MAX_RETRIES:
         try:
             if timeframe not in COINDESK_API_ENDPOINTS:
-                logging.warning(f"不支持的时间范围: {timeframe}")
+                logger.warning(f"不支持的时间范围: {timeframe}")
                 return pd.DataFrame()
             
             url = f"{COINDESK_API_BASE_URL}{COINDESK_API_ENDPOINTS[timeframe]}"
@@ -152,7 +145,7 @@ def get_historical_data_coindesk(symbol, timeframe="day"):
                 'response_format': COINDESK_API_PARAMS['response_format']
             }
             
-            logging.info(f"正在请求 {symbol} 历史数据，时间范围: {timeframe}")
+            logger.info(f"正在请求 {symbol} 历史数据，时间范围: {timeframe}")
             
             delay = {
                 'minute': (0.5, 1),
@@ -174,7 +167,7 @@ def get_historical_data_coindesk(symbol, timeframe="day"):
             data = response.json()
             
             if not data or 'Data' not in data or not isinstance(data['Data'], list):
-                logging.warning(f"历史数据API响应格式不符合预期")
+                logger.warning(f"历史数据API响应格式不符合预期")
                 return pd.DataFrame()
             
             historical_data = []
@@ -194,16 +187,16 @@ def get_historical_data_coindesk(symbol, timeframe="day"):
                 })
             
             df = pd.DataFrame(historical_data)
-            logging.info(f"成功获取 {symbol} 历史数据，时间范围: {timeframe}，记录数: {len(df)}")
+            logger.info(f"成功获取 {symbol} 历史数据，时间范围: {timeframe}，记录数: {len(df)}")
             return df
                 
         except Exception as e:
             retry_count += 1
             wait_time = RETRY_DELAY * (2 ** retry_count)
-            logging.error(f"请求异常: {str(e)}，等待 {wait_time} 秒后重试...")
+            logger.error(f"请求异常: {str(e)}，等待 {wait_time} 秒后重试...")
             time.sleep(wait_time)
     
-    logging.error(f"达到最大重试次数 ({MAX_RETRIES})，放弃获取 {symbol} 历史数据")
+    logger.error(f"达到最大重试次数 ({MAX_RETRIES})，放弃获取 {symbol} 历史数据")
     return pd.DataFrame()
 
 def scrape_realtime_crypto_data():
@@ -211,7 +204,7 @@ def scrape_realtime_crypto_data():
     realtime_data = []
     
     for name, symbol in CRYPTOCURRENCIES.items():
-        logging.info(f"开始抓取 {name} ({symbol}) 实时价格数据")
+        logger.info(f"开始抓取 {name} ({symbol}) 实时价格数据")
         
         # 获取当前价格
         current_data = get_crypto_price_coindesk(symbol, name)
@@ -233,7 +226,7 @@ def scrape_all_crypto_data():
     }
     
     for name, symbol in CRYPTOCURRENCIES.items():
-        logging.info(f"开始抓取 {name} ({symbol}) 数据")
+        logger.info(f"开始抓取 {name} ({symbol}) 数据")
         
         # 获取当前价格
         current_data = get_crypto_price_coindesk(symbol, name)
@@ -266,15 +259,15 @@ def scrape_all_crypto_data():
     return all_current_data, combined_historical_data
 
 if __name__ == "__main__":
-    logging.info("开始抓取加密货币数据")
+    logger.info("开始抓取加密货币数据")
     current_data, historical_data = scrape_all_crypto_data()
     
-    logging.info(f"抓取完成，当前价格数据: {len(current_data)} 条")
+    logger.info(f"抓取完成，当前价格数据: {len(current_data)} 条")
     for timeframe, df in historical_data.items():
-        logging.info(f"历史数据 ({timeframe}): {len(df)} 条")
+        logger.info(f"历史数据 ({timeframe}): {len(df)} 条")
     
     # 输出示例数据
     if current_data:
-        logging.info("当前价格数据示例:")
+        logger.info("当前价格数据示例:")
         for data in current_data:
-            logging.info(f"  {data['name']}: ${data['price']:,.2f}")
+            logger.info(f"  {data['name']}: ${data['price']:,.2f}")

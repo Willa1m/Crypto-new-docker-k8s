@@ -9,11 +9,10 @@ import time
 import hashlib
 import os
 from typing import Any, Optional, Dict
-import logging
+from datetime import datetime, timedelta
+from logger_config import get_crypto_logger
 
-# 配置日志
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = get_crypto_logger('redis_manager')
 
 class SimpleRedisManager:
     """简化版Redis缓存管理器"""

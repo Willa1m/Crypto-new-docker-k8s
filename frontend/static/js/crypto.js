@@ -77,9 +77,15 @@ let apiUsageInfo = null;
 function loadLatestPrices() {
     setStatus('正在获取最新价格...', 'loading');
 
-    // 使用绝对URL确保请求到正确的端口
-    const apiUrl = `${window.location.protocol}//${window.location.hostname}:8000/api/latest_prices`;
-    fetch(apiUrl)
+    // 添加时间戳参数绕过缓存
+    const timestamp = new Date().getTime();
+    fetch(`/api/latest_prices?_t=${timestamp}`, {
+        cache: 'no-cache',
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+        }
+    })
         .then(response => {
             if (!response.ok) {
                 throw new Error('网络响应不正常');
@@ -178,9 +184,15 @@ function displayPrices(data) {
 function loadChart(symbol = 'BTC') {
     setStatus('正在加载图表数据...', 'loading');
     
-    // 使用绝对URL确保请求到正确的端口
-    const apiUrl = `${window.location.protocol}//${window.location.hostname}:8000/api/chart_data?timeframe=${currentTimeframe}&symbol=${symbol}`;
-    fetch(apiUrl)
+    // 添加时间戳参数绕过缓存
+    const timestamp = new Date().getTime();
+    fetch(`/api/chart_data?timeframe=${currentTimeframe}&symbol=${symbol}&_t=${timestamp}`, {
+        cache: 'no-cache',
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+        }
+    })
         .then(response => {
             if (!response.ok) {
                 throw new Error('网络响应不正常');
@@ -246,9 +258,31 @@ function displayChart(data, symbol = 'BTC', timeframe = 'hour') {
             y: parseFloat(item.close) || 0
         }));
         
-        // 计算平均价格
+        // 优化：根据时间周期动态确定平均价格计算的数据范围
         const prices = formattedData.map(item => item.y);
-        const averagePrice = prices.reduce((sum, price) => sum + price, 0) / prices.length;
+        let averagePrice;
+        let dataRangeForAverage;
+        
+        // 根据时间周期确定计算平均价格的数据范围
+        if (timeframe === 'minute') {
+            // 分钟周期：使用最近60分钟数据（如果数据不足60条，使用全部数据）
+            dataRangeForAverage = Math.min(60, prices.length);
+        } else if (timeframe === 'hour') {
+            // 小时周期：使用最近24小时数据（如果数据不足24条，使用全部数据）
+            dataRangeForAverage = Math.min(24, prices.length);
+        } else if (timeframe === 'day') {
+            // 天周期：使用最近30天数据（如果数据不足30条，使用全部数据）
+            dataRangeForAverage = Math.min(30, prices.length);
+        } else {
+            // 默认使用全部数据
+            dataRangeForAverage = prices.length;
+        }
+        
+        // 计算指定范围内的平均价格（数据是降序排列，最新数据在前）
+        const pricesForAverage = prices.slice(0, dataRangeForAverage);
+        averagePrice = pricesForAverage.reduce((sum, price) => sum + price, 0) / pricesForAverage.length;
+        
+        console.log(`${timeframe}周期平均价格计算：使用最近${dataRangeForAverage}条数据，平均价格：$${averagePrice.toLocaleString()}`);
         
         // 计算与平均值的交点并创建分段数据
         const segmentedData = calculateIntersectionSegments(formattedData, averagePrice);
@@ -437,7 +471,10 @@ function displayChart(data, symbol = 'BTC', timeframe = 'hour') {
 // 显示图表统计信息
 function displayChartStats(symbol, prices, averagePrice) {
     const currentPrice = prices[prices.length - 1];
-    const priceChange = ((currentPrice - prices[0]) / prices[0] * 100);
+    // 修复：使用最早价格作为基准计算趋势（数据是降序排列，最早价格在数组末尾）
+    const earliestPrice = prices[prices.length - 1];  // 最早价格（基准价格）
+    const latestPrice = prices[0];  // 最新价格（当前价格）
+    const priceChange = ((latestPrice - earliestPrice) / earliestPrice * 100);
     const isAboveAverage = currentPrice >= averagePrice;
     
     // 获取统计信息容器
@@ -449,7 +486,6 @@ function displayChartStats(symbol, prices, averagePrice) {
     
     // 保存旧的统计数据用于比较
     let oldStats = {
-        currentPrice: NaN,
         averagePrice: NaN,
         trend: NaN
     };
@@ -457,9 +493,8 @@ function displayChartStats(symbol, prices, averagePrice) {
     // 尝试获取旧的统计数据
     try {
         if (statsContainer.querySelector('.stats-item:nth-child(1) .stats-value')) {
-            oldStats.currentPrice = parseFloat(statsContainer.querySelector('.stats-item:nth-child(1) .stats-value').textContent.replace('$', '').replace(/,/g, ''));
-            oldStats.averagePrice = parseFloat(statsContainer.querySelector('.stats-item:nth-child(2) .stats-value').textContent.replace('$', '').replace(/,/g, ''));
-            oldStats.trend = parseFloat(statsContainer.querySelector('.stats-item:nth-child(3) .stats-value').textContent.replace(/[^0-9.-]/g, ''));
+            oldStats.averagePrice = parseFloat(statsContainer.querySelector('.stats-item:nth-child(1) .stats-value').textContent.replace('$', '').replace(/,/g, ''));
+            oldStats.trend = parseFloat(statsContainer.querySelector('.stats-item:nth-child(2) .stats-value').textContent.replace(/[^0-9.-]/g, ''));
         }
     } catch (error) {
         console.warn('获取旧统计数据失败，使用默认值');
@@ -467,12 +502,6 @@ function displayChartStats(symbol, prices, averagePrice) {
     
     // 更新统计信息
     statsContainer.innerHTML = `
-        <div class="stats-item" id="currentPriceItem">
-            <span class="stats-label">当前价格:</span>
-            <span class="stats-value ${isAboveAverage ? 'positive' : 'negative'}">
-                $${currentPrice.toLocaleString()}
-            </span>
-        </div>
         <div class="stats-item" id="averagePriceItem">
             <span class="stats-label">平均价格:</span>
             <span class="stats-value">$${averagePrice.toLocaleString()}</span>
@@ -492,16 +521,6 @@ function displayChartStats(symbol, prices, averagePrice) {
     }
     
     // 添加闪动动画效果
-    if (!isNaN(oldStats.currentPrice) && oldStats.currentPrice !== currentPrice) {
-        const currentPriceItem = document.getElementById('currentPriceItem');
-        if (currentPriceItem) {
-            currentPriceItem.classList.add('flash');
-            setTimeout(() => {
-                currentPriceItem.classList.remove('flash');
-            }, 1000);
-        }
-    }
-    
     if (!isNaN(oldStats.averagePrice) && oldStats.averagePrice !== averagePrice) {
         const averagePriceItem = document.getElementById('averagePriceItem');
         if (averagePriceItem) {

@@ -40,7 +40,15 @@ async function loadKlineData() {
     try {
         showLoading(true);
         
-        const response = await fetch(`/api/kline_data?symbol=${currentSymbol}&timeframe=${currentTimeframe}&limit=100`);
+        // 添加时间戳参数绕过缓存
+        const timestamp = new Date().getTime();
+        const response = await fetch(`/api/kline_data?symbol=${currentSymbol}&timeframe=${currentTimeframe}&limit=100&_t=${timestamp}`, {
+            cache: 'no-cache',
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
+        });
         const result = await response.json();
         
         if (result.success && result.data) {
