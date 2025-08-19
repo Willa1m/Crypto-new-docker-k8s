@@ -3492,3 +3492,398 @@ day级数据统计:
 2025-08-19 10:03:17 - crypto.database - INFO - 数据库连接已关闭
 2025-08-19 10:03:17 - crypto.realtime_processor - INFO - 实时数据处理成功
 2025-08-19 10:03:17 - crypto.realtime_processor - INFO - 等待30秒后进行下一轮处理...
+2025-08-19 10:03:47 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:03:47 - crypto.__main__ - INFO - ETH: 当前价格 $4295.64, 24h前价格 $4470.64, 计算变化 -3.91%
+2025-08-19 10:03:47 - crypto.__main__ - INFO - BTC: 当前价格 $115860.13, 24h前价格 $117612.91, 计算变化 -1.49%
+2025-08-19 10:03:47 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:03:47 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:03:47] "GET /api/latest_prices?_t=1755569027275 HTTP/1.1" 200 -
+2025-08-19 10:03:47 - crypto.realtime_processor - INFO - ==================================================
+2025-08-19 10:03:47 - crypto.realtime_processor - INFO - 开始新一轮实时数据处理
+2025-08-19 10:03:47 - crypto.realtime_processor - INFO - 开始实时数据处理和存储流程
+2025-08-19 10:03:47 - crypto.database - INFO - 成功连接到 MariaDB 数据库
+2025-08-19 10:03:47 - crypto.realtime_processor - INFO - 开始抓取实时加密货币数据
+2025-08-19 10:03:47 - crypto.scraper - INFO - 开始抓取 Bitcoin (BTC) 实时价格数据
+2025-08-19 10:03:47 - crypto.scraper - INFO - 正在请求 Bitcoin (BTC) 价格
+2025-08-19 10:03:49 - crypto.scraper - INFO - Bitcoin (BTC) 当前价格: $115,821.39
+2025-08-19 10:03:49 - crypto.scraper - INFO - 开始抓取 Ethereum (ETH) 实时价格数据
+2025-08-19 10:03:49 - crypto.scraper - INFO - 正在请求 Ethereum (ETH) 价格
+2025-08-19 10:03:52 - crypto.scraper - INFO - Ethereum (ETH) 当前价格: $4,292.07
+2025-08-19 10:03:52 - crypto.realtime_processor - INFO - 开始存储实时价格数据到数据库
+2025-08-19 10:03:52 - crypto.timestamp_manager - INFO - 数据状态 [minute]: 新鲜
+2025-08-19 10:03:52 - crypto.timestamp_manager - INFO -   - 数据时间: 2025-08-19 10:01:30
+2025-08-19 10:03:52 - crypto.timestamp_manager - INFO -   - 延迟时间: -1 day, 15:59:30
+2025-08-19 10:03:52 - crypto.timestamp_manager - INFO -   - 质量分数: 1.00
+2025-08-19 10:03:52 - crypto.realtime_processor - INFO - 实时数据存储成功: BTC - $115,821.39 (质量分数: 1.00)
+2025-08-19 10:03:52 - crypto.timestamp_manager - INFO - 数据状态 [minute]: 新鲜
+2025-08-19 10:03:52 - crypto.timestamp_manager - INFO -   - 数据时间: 2025-08-19 10:01:39
+2025-08-19 10:03:52 - crypto.timestamp_manager - INFO -   - 延迟时间: -1 day, 15:59:21
+2025-08-19 10:03:52 - crypto.timestamp_manager - INFO -   - 质量分数: 1.00
+2025-08-19 10:03:52 - crypto.realtime_processor - INFO - 实时数据存储成功: ETH - $4,292.07 (质量分数: 1.00)
+2025-08-19 10:03:52 - crypto.realtime_processor - INFO - 开始缓存实时数据到Redis
+2025-08-19 10:03:52 - crypto.realtime_processor - WARNING - 实时价格列表缓存失败
+2025-08-19 10:03:52 - crypto.realtime_processor - WARNING - 实时数据缓存失败: BTC
+2025-08-19 10:03:52 - crypto.realtime_processor - WARNING - 实时数据缓存失败: ETH
+2025-08-19 10:03:52 - crypto.realtime_processor - INFO - 实时数据处理和存储完成
+2025-08-19 10:03:52 - crypto.database - INFO - 数据库连接已关闭
+2025-08-19 10:03:52 - crypto.realtime_processor - INFO - 实时数据处理成功
+2025-08-19 10:03:52 - crypto.realtime_processor - INFO - 等待30秒后进行下一轮处理...
+2025-08-19 10:04:22 - crypto.realtime_processor - INFO - ==================================================
+2025-08-19 10:04:22 - crypto.realtime_processor - INFO - 开始新一轮实时数据处理
+2025-08-19 10:04:22 - crypto.realtime_processor - INFO - 开始实时数据处理和存储流程
+2025-08-19 10:04:22 - crypto.database - INFO - 成功连接到 MariaDB 数据库
+2025-08-19 10:04:22 - crypto.realtime_processor - INFO - 开始抓取实时加密货币数据
+2025-08-19 10:04:22 - crypto.scraper - INFO - 开始抓取 Bitcoin (BTC) 实时价格数据
+2025-08-19 10:04:22 - crypto.scraper - INFO - 正在请求 Bitcoin (BTC) 价格
+2025-08-19 10:04:24 - crypto.scraper - INFO - Bitcoin (BTC) 当前价格: $115,869.68
+2025-08-19 10:04:24 - crypto.scraper - INFO - 开始抓取 Ethereum (ETH) 实时价格数据
+2025-08-19 10:04:24 - crypto.scraper - INFO - 正在请求 Ethereum (ETH) 价格
+2025-08-19 10:04:26 - crypto.scraper - INFO - Ethereum (ETH) 当前价格: $4,296.64
+2025-08-19 10:04:27 - crypto.realtime_processor - INFO - 开始存储实时价格数据到数据库
+2025-08-19 10:04:27 - crypto.timestamp_manager - INFO - 数据状态 [minute]: 新鲜
+2025-08-19 10:04:27 - crypto.timestamp_manager - INFO -   - 数据时间: 2025-08-19 10:02:09
+2025-08-19 10:04:27 - crypto.timestamp_manager - INFO -   - 延迟时间: -1 day, 15:59:51
+2025-08-19 10:04:27 - crypto.timestamp_manager - INFO -   - 质量分数: 1.00
+2025-08-19 10:04:27 - crypto.realtime_processor - INFO - 实时数据存储成功: BTC - $115,869.68 (质量分数: 1.00)
+2025-08-19 10:04:27 - crypto.timestamp_manager - INFO - 数据状态 [minute]: 新鲜
+2025-08-19 10:04:27 - crypto.timestamp_manager - INFO -   - 数据时间: 2025-08-19 10:02:16
+2025-08-19 10:04:27 - crypto.timestamp_manager - INFO -   - 延迟时间: -1 day, 15:59:44
+2025-08-19 10:04:27 - crypto.timestamp_manager - INFO -   - 质量分数: 1.00
+2025-08-19 10:04:27 - crypto.realtime_processor - INFO - 实时数据存储成功: ETH - $4,296.64 (质量分数: 1.00)
+2025-08-19 10:04:27 - crypto.realtime_processor - INFO - 开始缓存实时数据到Redis
+2025-08-19 10:04:27 - crypto.realtime_processor - WARNING - 实时价格列表缓存失败
+2025-08-19 10:04:27 - crypto.realtime_processor - WARNING - 实时数据缓存失败: BTC
+2025-08-19 10:04:27 - crypto.realtime_processor - WARNING - 实时数据缓存失败: ETH
+2025-08-19 10:04:27 - crypto.realtime_processor - INFO - 实时数据处理和存储完成
+2025-08-19 10:04:27 - crypto.database - INFO - 数据库连接已关闭
+2025-08-19 10:04:27 - crypto.realtime_processor - INFO - 实时数据处理成功
+2025-08-19 10:04:27 - crypto.realtime_processor - INFO - 等待30秒后进行下一轮处理...
+2025-08-19 10:04:45 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:04:45] "GET / HTTP/1.1" 200 -
+2025-08-19 10:04:45 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:04:45] "GET /static/css/styles.css HTTP/1.1" 200 -
+2025-08-19 10:04:45 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:04:45] "GET /static/icons/bitcoin.svg HTTP/1.1" 200 -
+2025-08-19 10:04:45 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:04:45] "GET /static/icons/ethereum.svg HTTP/1.1" 200 -
+2025-08-19 10:04:45 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:04:45] "GET /static/js/crypto.js HTTP/1.1" 200 -
+2025-08-19 10:04:46 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:04:46] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-08-19 10:04:46 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:04:46 - crypto.__main__ - INFO - Redis缓存中没有BTC的hour图表数据，从数据库获取
+2025-08-19 10:04:46 - crypto.__main__ - INFO - ETH: 当前价格 $4296.64, 24h前价格 $4470.64, 计算变化 -3.89%
+2025-08-19 10:04:46 - crypto.__main__ - INFO - BTC的hour图表数据已缓存到Redis
+2025-08-19 10:04:46 - crypto.__main__ - INFO - BTC: 当前价格 $115869.68, 24h前价格 $117612.91, 计算变化 -1.48%
+2025-08-19 10:04:46 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:04:46 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:04:46] "GET /api/chart_data?timeframe=hour&symbol=BTC&_t=1755569086114 HTTP/1.1" 200 -
+2025-08-19 10:04:46 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:04:46] "GET /api/latest_prices?_t=1755569086113 HTTP/1.1" 200 -
+2025-08-19 10:04:47 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:04:47 - crypto.__main__ - INFO - ETH: 当前价格 $4296.64, 24h前价格 $4470.64, 计算变化 -3.89%
+2025-08-19 10:04:47 - crypto.__main__ - INFO - BTC: 当前价格 $115869.68, 24h前价格 $117612.91, 计算变化 -1.48%
+2025-08-19 10:04:47 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:04:47 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:04:47] "GET /api/latest_prices?_t=1755569087273 HTTP/1.1" 200 -
+2025-08-19 10:04:53 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:04:53] "GET / HTTP/1.1" 200 -
+2025-08-19 10:04:53 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:04:53] "[36mGET /static/icons/bitcoin.svg HTTP/1.1[0m" 304 -
+2025-08-19 10:04:53 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:04:53] "[36mGET /static/js/crypto.js HTTP/1.1[0m" 304 -
+2025-08-19 10:04:53 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:04:53] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2025-08-19 10:04:53 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:04:53] "[36mGET /static/icons/ethereum.svg HTTP/1.1[0m" 304 -
+2025-08-19 10:04:54 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:04:54 - crypto.__main__ - INFO - Redis缓存中没有BTC的hour图表数据，从数据库获取
+2025-08-19 10:04:54 - crypto.__main__ - INFO - ETH: 当前价格 $4296.64, 24h前价格 $4470.64, 计算变化 -3.89%
+2025-08-19 10:04:54 - crypto.__main__ - INFO - BTC的hour图表数据已缓存到Redis
+2025-08-19 10:04:54 - crypto.__main__ - INFO - BTC: 当前价格 $115869.68, 24h前价格 $117612.91, 计算变化 -1.48%
+2025-08-19 10:04:54 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:04:54 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:04:54] "GET /api/chart_data?timeframe=hour&symbol=BTC&_t=1755569094462 HTTP/1.1" 200 -
+2025-08-19 10:04:54 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:04:54] "GET /api/latest_prices?_t=1755569094462 HTTP/1.1" 200 -
+2025-08-19 10:04:57 - crypto.realtime_processor - INFO - ==================================================
+2025-08-19 10:04:57 - crypto.realtime_processor - INFO - 开始新一轮实时数据处理
+2025-08-19 10:04:57 - crypto.realtime_processor - INFO - 开始实时数据处理和存储流程
+2025-08-19 10:04:57 - crypto.database - INFO - 成功连接到 MariaDB 数据库
+2025-08-19 10:04:57 - crypto.realtime_processor - INFO - 开始抓取实时加密货币数据
+2025-08-19 10:04:57 - crypto.scraper - INFO - 开始抓取 Bitcoin (BTC) 实时价格数据
+2025-08-19 10:04:57 - crypto.scraper - INFO - 正在请求 Bitcoin (BTC) 价格
+2025-08-19 10:04:59 - crypto.scraper - INFO - Bitcoin (BTC) 当前价格: $115,834.21
+2025-08-19 10:05:00 - crypto.scraper - INFO - 开始抓取 Ethereum (ETH) 实时价格数据
+2025-08-19 10:05:00 - crypto.scraper - INFO - 正在请求 Ethereum (ETH) 价格
+2025-08-19 10:05:02 - crypto.scraper - INFO - Ethereum (ETH) 当前价格: $4,291.74
+2025-08-19 10:05:03 - crypto.realtime_processor - INFO - 开始存储实时价格数据到数据库
+2025-08-19 10:05:03 - crypto.timestamp_manager - INFO - 数据状态 [minute]: 新鲜
+2025-08-19 10:05:03 - crypto.timestamp_manager - INFO -   - 数据时间: 2025-08-19 10:02:51
+2025-08-19 10:05:03 - crypto.timestamp_manager - INFO -   - 延迟时间: -1 day, 16:00:09
+2025-08-19 10:05:03 - crypto.timestamp_manager - INFO -   - 质量分数: 1.00
+2025-08-19 10:05:03 - crypto.realtime_processor - INFO - 实时数据存储成功: BTC - $115,834.21 (质量分数: 1.00)
+2025-08-19 10:05:03 - crypto.timestamp_manager - INFO - 数据状态 [minute]: 新鲜
+2025-08-19 10:05:03 - crypto.timestamp_manager - INFO -   - 数据时间: 2025-08-19 10:02:51
+2025-08-19 10:05:03 - crypto.timestamp_manager - INFO -   - 延迟时间: -1 day, 16:00:09
+2025-08-19 10:05:03 - crypto.timestamp_manager - INFO -   - 质量分数: 1.00
+2025-08-19 10:05:03 - crypto.realtime_processor - INFO - 实时数据存储成功: ETH - $4,291.74 (质量分数: 1.00)
+2025-08-19 10:05:03 - crypto.realtime_processor - INFO - 开始缓存实时数据到Redis
+2025-08-19 10:05:03 - crypto.realtime_processor - WARNING - 实时价格列表缓存失败
+2025-08-19 10:05:03 - crypto.realtime_processor - WARNING - 实时数据缓存失败: BTC
+2025-08-19 10:05:03 - crypto.realtime_processor - WARNING - 实时数据缓存失败: ETH
+2025-08-19 10:05:03 - crypto.realtime_processor - INFO - 实时数据处理和存储完成
+2025-08-19 10:05:03 - crypto.database - INFO - 数据库连接已关闭
+2025-08-19 10:05:03 - crypto.realtime_processor - INFO - 实时数据处理成功
+2025-08-19 10:05:03 - crypto.realtime_processor - INFO - 等待30秒后进行下一轮处理...
+2025-08-19 10:05:07 - crypto.__main__ - INFO - Redis缓存中没有BTC的minute图表数据，从数据库获取
+2025-08-19 10:05:07 - crypto.__main__ - INFO - BTC的minute图表数据已缓存到Redis
+2025-08-19 10:05:07 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:05:07] "GET /api/chart_data?timeframe=minute&symbol=BTC&_t=1755569107964 HTTP/1.1" 200 -
+2025-08-19 10:05:10 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:05:10 - crypto.__main__ - INFO - Redis缓存中没有BTC的minute图表数据，从数据库获取
+2025-08-19 10:05:10 - crypto.__main__ - INFO - BTC: 当前价格 $115834.21, 24h前价格 $117612.91, 计算变化 -1.51%
+2025-08-19 10:05:10 - crypto.__main__ - INFO - BTC的minute图表数据已缓存到Redis
+2025-08-19 10:05:10 - crypto.__main__ - INFO - ETH: 当前价格 $4291.74, 24h前价格 $4470.64, 计算变化 -4.00%
+2025-08-19 10:05:10 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:05:10 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:05:10] "GET /api/chart_data?timeframe=minute&symbol=BTC&_t=1755569110085 HTTP/1.1" 200 -
+2025-08-19 10:05:10 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:05:10] "GET /api/latest_prices?_t=1755569110085 HTTP/1.1" 200 -
+2025-08-19 10:05:20 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:05:20] "GET /kline HTTP/1.1" 200 -
+2025-08-19 10:05:20 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:05:20] "GET /kline HTTP/1.1" 200 -
+2025-08-19 10:05:20 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:05:20] "[36mGET /static/css/kline.css HTTP/1.1[0m" 304 -
+2025-08-19 10:05:20 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:05:20] "[36mGET /static/icons/bitcoin.svg HTTP/1.1[0m" 304 -
+2025-08-19 10:05:20 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:05:20] "[36mGET /static/icons/ethereum.svg HTTP/1.1[0m" 304 -
+2025-08-19 10:05:20 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:05:20] "[36mGET /static/js/libs/echarts.min.js HTTP/1.1[0m" 304 -
+2025-08-19 10:05:20 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:05:20] "[36mGET /static/js/kline.js HTTP/1.1[0m" 304 -
+2025-08-19 10:05:20 - crypto.database - INFO - 成功连接到 MariaDB 数据库
+2025-08-19 10:05:20 - crypto.kline_backend - INFO - 成功从数据库获取 BTC 的 hour 级K线数据，共 100 条
+2025-08-19 10:05:20 - crypto.database - INFO - 数据库连接已关闭
+2025-08-19 10:05:20 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:05:20] "GET /api/kline_data?symbol=BTC&timeframe=hour&limit=100&_t=1755569120376 HTTP/1.1" 200 -
+2025-08-19 10:05:20 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:05:20] "[33mGET /@vite/client HTTP/1.1[0m" 404 -
+2025-08-19 10:05:33 - crypto.realtime_processor - INFO - ==================================================
+2025-08-19 10:05:33 - crypto.realtime_processor - INFO - 开始新一轮实时数据处理
+2025-08-19 10:05:33 - crypto.realtime_processor - INFO - 开始实时数据处理和存储流程
+2025-08-19 10:05:33 - crypto.database - INFO - 成功连接到 MariaDB 数据库
+2025-08-19 10:05:33 - crypto.realtime_processor - INFO - 开始抓取实时加密货币数据
+2025-08-19 10:05:33 - crypto.scraper - INFO - 开始抓取 Bitcoin (BTC) 实时价格数据
+2025-08-19 10:05:33 - crypto.scraper - INFO - 正在请求 Bitcoin (BTC) 价格
+2025-08-19 10:05:35 - crypto.scraper - INFO - Bitcoin (BTC) 当前价格: $115,819.05
+2025-08-19 10:05:36 - crypto.scraper - INFO - 开始抓取 Ethereum (ETH) 实时价格数据
+2025-08-19 10:05:36 - crypto.scraper - INFO - 正在请求 Ethereum (ETH) 价格
+2025-08-19 10:05:38 - crypto.scraper - INFO - Ethereum (ETH) 当前价格: $4,291.43
+2025-08-19 10:05:39 - crypto.realtime_processor - INFO - 开始存储实时价格数据到数据库
+2025-08-19 10:05:39 - crypto.timestamp_manager - INFO - 数据状态 [minute]: 新鲜
+2025-08-19 10:05:39 - crypto.timestamp_manager - INFO -   - 数据时间: 2025-08-19 10:03:29
+2025-08-19 10:05:39 - crypto.timestamp_manager - INFO -   - 延迟时间: -1 day, 15:59:31
+2025-08-19 10:05:39 - crypto.timestamp_manager - INFO -   - 质量分数: 1.00
+2025-08-19 10:05:39 - crypto.realtime_processor - INFO - 实时数据存储成功: BTC - $115,819.05 (质量分数: 1.00)
+2025-08-19 10:05:39 - crypto.timestamp_manager - INFO - 数据状态 [minute]: 新鲜
+2025-08-19 10:05:39 - crypto.timestamp_manager - INFO -   - 数据时间: 2025-08-19 10:03:33
+2025-08-19 10:05:39 - crypto.timestamp_manager - INFO -   - 延迟时间: -1 day, 15:59:27
+2025-08-19 10:05:39 - crypto.timestamp_manager - INFO -   - 质量分数: 1.00
+2025-08-19 10:05:39 - crypto.realtime_processor - INFO - 实时数据存储成功: ETH - $4,291.43 (质量分数: 1.00)
+2025-08-19 10:05:39 - crypto.realtime_processor - INFO - 开始缓存实时数据到Redis
+2025-08-19 10:05:39 - crypto.realtime_processor - WARNING - 实时价格列表缓存失败
+2025-08-19 10:05:39 - crypto.realtime_processor - WARNING - 实时数据缓存失败: BTC
+2025-08-19 10:05:39 - crypto.realtime_processor - WARNING - 实时数据缓存失败: ETH
+2025-08-19 10:05:39 - crypto.realtime_processor - INFO - 实时数据处理和存储完成
+2025-08-19 10:05:39 - crypto.database - INFO - 数据库连接已关闭
+2025-08-19 10:05:39 - crypto.realtime_processor - INFO - 实时数据处理成功
+2025-08-19 10:05:39 - crypto.realtime_processor - INFO - 等待30秒后进行下一轮处理...
+2025-08-19 10:05:47 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:05:47 - crypto.__main__ - INFO - ETH: 当前价格 $4291.43, 24h前价格 $4470.64, 计算变化 -4.01%
+2025-08-19 10:05:47 - crypto.__main__ - INFO - BTC: 当前价格 $115819.05, 24h前价格 $117612.91, 计算变化 -1.53%
+2025-08-19 10:05:47 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:05:47 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:05:47] "GET /api/latest_prices?_t=1755569147275 HTTP/1.1" 200 -
+2025-08-19 10:05:50 - crypto.database - INFO - 成功连接到 MariaDB 数据库
+2025-08-19 10:05:50 - crypto.kline_backend - INFO - 成功从数据库获取 BTC 的 hour 级K线数据，共 100 条
+2025-08-19 10:05:50 - crypto.database - INFO - 数据库连接已关闭
+2025-08-19 10:05:50 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:05:50] "GET /api/kline_data?symbol=BTC&timeframe=hour&limit=100&_t=1755569150381 HTTP/1.1" 200 -
+2025-08-19 10:06:09 - crypto.realtime_processor - INFO - ==================================================
+2025-08-19 10:06:09 - crypto.realtime_processor - INFO - 开始新一轮实时数据处理
+2025-08-19 10:06:09 - crypto.realtime_processor - INFO - 开始实时数据处理和存储流程
+2025-08-19 10:06:09 - crypto.database - INFO - 成功连接到 MariaDB 数据库
+2025-08-19 10:06:09 - crypto.realtime_processor - INFO - 开始抓取实时加密货币数据
+2025-08-19 10:06:09 - crypto.scraper - INFO - 开始抓取 Bitcoin (BTC) 实时价格数据
+2025-08-19 10:06:09 - crypto.scraper - INFO - 正在请求 Bitcoin (BTC) 价格
+2025-08-19 10:06:11 - crypto.scraper - INFO - Bitcoin (BTC) 当前价格: $115,808.70
+2025-08-19 10:06:11 - crypto.scraper - INFO - 开始抓取 Ethereum (ETH) 实时价格数据
+2025-08-19 10:06:11 - crypto.scraper - INFO - 正在请求 Ethereum (ETH) 价格
+2025-08-19 10:06:14 - crypto.scraper - INFO - Ethereum (ETH) 当前价格: $4,291.17
+2025-08-19 10:06:14 - crypto.realtime_processor - INFO - 开始存储实时价格数据到数据库
+2025-08-19 10:06:14 - crypto.timestamp_manager - INFO - 数据状态 [minute]: 新鲜
+2025-08-19 10:06:14 - crypto.timestamp_manager - INFO -   - 数据时间: 2025-08-19 10:03:37
+2025-08-19 10:06:14 - crypto.timestamp_manager - INFO -   - 延迟时间: -1 day, 16:00:23
+2025-08-19 10:06:14 - crypto.timestamp_manager - INFO -   - 质量分数: 1.00
+2025-08-19 10:06:14 - crypto.realtime_processor - INFO - 实时数据存储成功: BTC - $115,808.70 (质量分数: 1.00)
+2025-08-19 10:06:14 - crypto.timestamp_manager - INFO - 数据状态 [minute]: 新鲜
+2025-08-19 10:06:14 - crypto.timestamp_manager - INFO -   - 数据时间: 2025-08-19 10:03:37
+2025-08-19 10:06:14 - crypto.timestamp_manager - INFO -   - 延迟时间: -1 day, 16:00:23
+2025-08-19 10:06:14 - crypto.timestamp_manager - INFO -   - 质量分数: 1.00
+2025-08-19 10:06:14 - crypto.realtime_processor - INFO - 实时数据存储成功: ETH - $4,291.17 (质量分数: 1.00)
+2025-08-19 10:06:14 - crypto.realtime_processor - INFO - 开始缓存实时数据到Redis
+2025-08-19 10:06:14 - crypto.realtime_processor - WARNING - 实时价格列表缓存失败
+2025-08-19 10:06:14 - crypto.realtime_processor - WARNING - 实时数据缓存失败: BTC
+2025-08-19 10:06:14 - crypto.realtime_processor - WARNING - 实时数据缓存失败: ETH
+2025-08-19 10:06:14 - crypto.realtime_processor - INFO - 实时数据处理和存储完成
+2025-08-19 10:06:14 - crypto.database - INFO - 数据库连接已关闭
+2025-08-19 10:06:14 - crypto.realtime_processor - INFO - 实时数据处理成功
+2025-08-19 10:06:14 - crypto.realtime_processor - INFO - 等待30秒后进行下一轮处理...
+2025-08-19 10:06:20 - crypto.database - INFO - 成功连接到 MariaDB 数据库
+2025-08-19 10:06:20 - crypto.kline_backend - INFO - 成功从数据库获取 BTC 的 hour 级K线数据，共 100 条
+2025-08-19 10:06:20 - crypto.database - INFO - 数据库连接已关闭
+2025-08-19 10:06:20 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:06:20] "GET /api/kline_data?symbol=BTC&timeframe=hour&limit=100&_t=1755569180392 HTTP/1.1" 200 -
+2025-08-19 10:06:39 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:06:39] "GET /bitcoin HTTP/1.1" 200 -
+2025-08-19 10:06:39 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:06:39] "GET /static/css/styles.css HTTP/1.1" 200 -
+2025-08-19 10:06:39 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:06:39] "[36mGET /static/icons/bitcoin.svg HTTP/1.1[0m" 304 -
+2025-08-19 10:06:39 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:06:39] "[36mGET /static/icons/ethereum.svg HTTP/1.1[0m" 304 -
+2025-08-19 10:06:39 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:06:39] "[36mGET /static/js/bitcoin.js HTTP/1.1[0m" 304 -
+2025-08-19 10:06:39 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:06:39 - crypto.__main__ - INFO - Redis缓存中没有BTC的hour图表数据，从数据库获取
+2025-08-19 10:06:39 - crypto.__main__ - INFO - BTC: 当前价格 $115808.70, 24h前价格 $117612.91, 计算变化 -1.53%
+2025-08-19 10:06:39 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:06:39] "[33mGET /@vite/client HTTP/1.1[0m" 404 -
+2025-08-19 10:06:39 - crypto.__main__ - INFO - BTC的hour图表数据已缓存到Redis
+2025-08-19 10:06:39 - crypto.__main__ - INFO - ETH: 当前价格 $4291.17, 24h前价格 $4470.64, 计算变化 -4.01%
+2025-08-19 10:06:39 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:06:39 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:06:39] "GET /api/btc_data?timeframe=hour&limit=100&_t=1755569199530 HTTP/1.1" 200 -
+2025-08-19 10:06:39 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:06:39] "GET /api/latest_prices?_t=1755569199529 HTTP/1.1" 200 -
+2025-08-19 10:06:44 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:06:44 - crypto.__main__ - INFO - BTC: 当前价格 $115808.70, 24h前价格 $117612.91, 计算变化 -1.53%
+2025-08-19 10:06:44 - crypto.__main__ - INFO - ETH: 当前价格 $4291.17, 24h前价格 $4470.64, 计算变化 -4.01%
+2025-08-19 10:06:44 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:06:44 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:06:44] "GET /api/latest_prices?_t=1755569204532 HTTP/1.1" 200 -
+2025-08-19 10:06:44 - crypto.realtime_processor - INFO - ==================================================
+2025-08-19 10:06:44 - crypto.realtime_processor - INFO - 开始新一轮实时数据处理
+2025-08-19 10:06:44 - crypto.realtime_processor - INFO - 开始实时数据处理和存储流程
+2025-08-19 10:06:44 - crypto.database - INFO - 成功连接到 MariaDB 数据库
+2025-08-19 10:06:44 - crypto.realtime_processor - INFO - 开始抓取实时加密货币数据
+2025-08-19 10:06:44 - crypto.scraper - INFO - 开始抓取 Bitcoin (BTC) 实时价格数据
+2025-08-19 10:06:44 - crypto.scraper - INFO - 正在请求 Bitcoin (BTC) 价格
+2025-08-19 10:06:46 - crypto.scraper - INFO - Bitcoin (BTC) 当前价格: $115,810.70
+2025-08-19 10:06:47 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:06:47 - crypto.__main__ - INFO - BTC: 当前价格 $115808.70, 24h前价格 $117612.91, 计算变化 -1.53%
+2025-08-19 10:06:47 - crypto.__main__ - INFO - ETH: 当前价格 $4291.17, 24h前价格 $4470.64, 计算变化 -4.01%
+2025-08-19 10:06:47 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:06:47 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:06:47] "GET /api/latest_prices?_t=1755569207271 HTTP/1.1" 200 -
+2025-08-19 10:06:47 - crypto.scraper - INFO - 开始抓取 Ethereum (ETH) 实时价格数据
+2025-08-19 10:06:47 - crypto.scraper - INFO - 正在请求 Ethereum (ETH) 价格
+2025-08-19 10:06:49 - crypto.scraper - INFO - Ethereum (ETH) 当前价格: $4,292.38
+2025-08-19 10:06:49 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:06:49 - crypto.__main__ - INFO - BTC: 当前价格 $115808.70, 24h前价格 $117612.91, 计算变化 -1.53%
+2025-08-19 10:06:49 - crypto.__main__ - INFO - ETH: 当前价格 $4291.17, 24h前价格 $4470.64, 计算变化 -4.01%
+2025-08-19 10:06:49 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:06:49 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:06:49] "GET /api/latest_prices?_t=1755569209535 HTTP/1.1" 200 -
+2025-08-19 10:06:50 - crypto.realtime_processor - INFO - 开始存储实时价格数据到数据库
+2025-08-19 10:06:50 - crypto.timestamp_manager - INFO - 数据状态 [minute]: 新鲜
+2025-08-19 10:06:50 - crypto.timestamp_manager - INFO -   - 数据时间: 2025-08-19 10:03:49
+2025-08-19 10:06:50 - crypto.timestamp_manager - INFO -   - 延迟时间: -1 day, 16:00:11
+2025-08-19 10:06:50 - crypto.timestamp_manager - INFO -   - 质量分数: 1.00
+2025-08-19 10:06:50 - crypto.realtime_processor - INFO - 实时数据存储成功: BTC - $115,810.70 (质量分数: 1.00)
+2025-08-19 10:06:50 - crypto.timestamp_manager - INFO - 数据状态 [minute]: 新鲜
+2025-08-19 10:06:50 - crypto.timestamp_manager - INFO -   - 数据时间: 2025-08-19 10:03:51
+2025-08-19 10:06:50 - crypto.timestamp_manager - INFO -   - 延迟时间: -1 day, 16:00:09
+2025-08-19 10:06:50 - crypto.timestamp_manager - INFO -   - 质量分数: 1.00
+2025-08-19 10:06:50 - crypto.realtime_processor - INFO - 实时数据存储成功: ETH - $4,292.38 (质量分数: 1.00)
+2025-08-19 10:06:50 - crypto.realtime_processor - INFO - 开始缓存实时数据到Redis
+2025-08-19 10:06:50 - crypto.realtime_processor - WARNING - 实时价格列表缓存失败
+2025-08-19 10:06:50 - crypto.realtime_processor - WARNING - 实时数据缓存失败: BTC
+2025-08-19 10:06:50 - crypto.realtime_processor - WARNING - 实时数据缓存失败: ETH
+2025-08-19 10:06:50 - crypto.realtime_processor - INFO - 实时数据处理和存储完成
+2025-08-19 10:06:50 - crypto.database - INFO - 数据库连接已关闭
+2025-08-19 10:06:50 - crypto.realtime_processor - INFO - 实时数据处理成功
+2025-08-19 10:06:50 - crypto.realtime_processor - INFO - 等待30秒后进行下一轮处理...
+2025-08-19 10:06:54 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:06:54 - crypto.__main__ - INFO - ETH: 当前价格 $4292.38, 24h前价格 $4470.64, 计算变化 -3.99%
+2025-08-19 10:06:54 - crypto.__main__ - INFO - BTC: 当前价格 $115810.70, 24h前价格 $117612.91, 计算变化 -1.53%
+2025-08-19 10:06:54 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:06:54 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:06:54] "GET /api/latest_prices?_t=1755569214538 HTTP/1.1" 200 -
+2025-08-19 10:06:59 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:06:59 - crypto.__main__ - INFO - ETH: 当前价格 $4292.38, 24h前价格 $4470.64, 计算变化 -3.99%
+2025-08-19 10:06:59 - crypto.__main__ - INFO - BTC: 当前价格 $115810.70, 24h前价格 $117612.91, 计算变化 -1.53%
+2025-08-19 10:06:59 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:06:59 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:06:59] "GET /api/latest_prices?_t=1755569219535 HTTP/1.1" 200 -
+2025-08-19 10:07:04 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:07:04 - crypto.__main__ - INFO - ETH: 当前价格 $4292.38, 24h前价格 $4470.64, 计算变化 -3.99%
+2025-08-19 10:07:04 - crypto.__main__ - INFO - BTC: 当前价格 $115810.70, 24h前价格 $117612.91, 计算变化 -1.53%
+2025-08-19 10:07:04 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:07:04 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:07:04] "GET /api/latest_prices?_t=1755569224539 HTTP/1.1" 200 -
+2025-08-19 10:07:09 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:07:09 - crypto.__main__ - INFO - ETH: 当前价格 $4292.38, 24h前价格 $4470.64, 计算变化 -3.99%
+2025-08-19 10:07:09 - crypto.__main__ - INFO - BTC: 当前价格 $115810.70, 24h前价格 $117612.91, 计算变化 -1.53%
+2025-08-19 10:07:09 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:07:09 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:07:09] "GET /api/latest_prices?_t=1755569229530 HTTP/1.1" 200 -
+2025-08-19 10:07:14 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:07:14 - crypto.__main__ - INFO - ETH: 当前价格 $4292.38, 24h前价格 $4470.64, 计算变化 -3.99%
+2025-08-19 10:07:14 - crypto.__main__ - INFO - BTC: 当前价格 $115810.70, 24h前价格 $117612.91, 计算变化 -1.53%
+2025-08-19 10:07:14 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:07:14 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:07:14] "GET /api/latest_prices?_t=1755569234545 HTTP/1.1" 200 -
+2025-08-19 10:07:19 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:07:19 - crypto.__main__ - INFO - ETH: 当前价格 $4292.38, 24h前价格 $4470.64, 计算变化 -3.99%
+2025-08-19 10:07:19 - crypto.__main__ - INFO - BTC: 当前价格 $115810.70, 24h前价格 $117612.91, 计算变化 -1.53%
+2025-08-19 10:07:19 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:07:19 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:07:19] "GET /api/latest_prices?_t=1755569239545 HTTP/1.1" 200 -
+2025-08-19 10:07:20 - crypto.realtime_processor - INFO - ==================================================
+2025-08-19 10:07:20 - crypto.realtime_processor - INFO - 开始新一轮实时数据处理
+2025-08-19 10:07:20 - crypto.realtime_processor - INFO - 开始实时数据处理和存储流程
+2025-08-19 10:07:20 - crypto.database - INFO - 成功连接到 MariaDB 数据库
+2025-08-19 10:07:20 - crypto.realtime_processor - INFO - 开始抓取实时加密货币数据
+2025-08-19 10:07:20 - crypto.scraper - INFO - 开始抓取 Bitcoin (BTC) 实时价格数据
+2025-08-19 10:07:20 - crypto.scraper - INFO - 正在请求 Bitcoin (BTC) 价格
+2025-08-19 10:07:21 - crypto.scraper - INFO - Bitcoin (BTC) 当前价格: $115,832.90
+2025-08-19 10:07:22 - crypto.scraper - INFO - 开始抓取 Ethereum (ETH) 实时价格数据
+2025-08-19 10:07:22 - crypto.scraper - INFO - 正在请求 Ethereum (ETH) 价格
+2025-08-19 10:07:24 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:07:24 - crypto.__main__ - INFO - ETH: 当前价格 $4292.38, 24h前价格 $4470.64, 计算变化 -3.99%
+2025-08-19 10:07:24 - crypto.__main__ - INFO - BTC: 当前价格 $115810.70, 24h前价格 $117612.91, 计算变化 -1.53%
+2025-08-19 10:07:24 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:07:24 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:07:24] "GET /api/latest_prices?_t=1755569244538 HTTP/1.1" 200 -
+2025-08-19 10:07:27 - crypto.scraper - INFO - Ethereum (ETH) 当前价格: $4,292.04
+2025-08-19 10:07:27 - crypto.realtime_processor - INFO - 开始存储实时价格数据到数据库
+2025-08-19 10:07:27 - crypto.timestamp_manager - INFO - 数据状态 [minute]: 新鲜
+2025-08-19 10:07:27 - crypto.timestamp_manager - INFO -   - 数据时间: 2025-08-19 10:04:10
+2025-08-19 10:07:27 - crypto.timestamp_manager - INFO -   - 延迟时间: -1 day, 16:00:50
+2025-08-19 10:07:27 - crypto.timestamp_manager - INFO -   - 质量分数: 1.00
+2025-08-19 10:07:27 - crypto.realtime_processor - INFO - 实时数据存储成功: BTC - $115,832.90 (质量分数: 1.00)
+2025-08-19 10:07:27 - crypto.timestamp_manager - INFO - 数据状态 [minute]: 新鲜
+2025-08-19 10:07:27 - crypto.timestamp_manager - INFO -   - 数据时间: 2025-08-19 10:04:16
+2025-08-19 10:07:27 - crypto.timestamp_manager - INFO -   - 延迟时间: -1 day, 16:00:44
+2025-08-19 10:07:27 - crypto.timestamp_manager - INFO -   - 质量分数: 1.00
+2025-08-19 10:07:27 - crypto.realtime_processor - INFO - 实时数据存储成功: ETH - $4,292.04 (质量分数: 1.00)
+2025-08-19 10:07:27 - crypto.realtime_processor - INFO - 开始缓存实时数据到Redis
+2025-08-19 10:07:27 - crypto.realtime_processor - WARNING - 实时价格列表缓存失败
+2025-08-19 10:07:27 - crypto.realtime_processor - WARNING - 实时数据缓存失败: BTC
+2025-08-19 10:07:27 - crypto.realtime_processor - WARNING - 实时数据缓存失败: ETH
+2025-08-19 10:07:27 - crypto.realtime_processor - INFO - 实时数据处理和存储完成
+2025-08-19 10:07:27 - crypto.database - INFO - 数据库连接已关闭
+2025-08-19 10:07:27 - crypto.realtime_processor - INFO - 实时数据处理成功
+2025-08-19 10:07:27 - crypto.realtime_processor - INFO - 等待30秒后进行下一轮处理...
+2025-08-19 10:07:29 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:07:29 - crypto.__main__ - INFO - ETH: 当前价格 $4292.04, 24h前价格 $4470.64, 计算变化 -4.00%
+2025-08-19 10:07:29 - crypto.__main__ - INFO - BTC: 当前价格 $115832.90, 24h前价格 $117612.91, 计算变化 -1.51%
+2025-08-19 10:07:29 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:07:29 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:07:29] "GET /api/latest_prices?_t=1755569249539 HTTP/1.1" 200 -
+2025-08-19 10:07:34 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:07:34 - crypto.__main__ - INFO - ETH: 当前价格 $4292.04, 24h前价格 $4470.64, 计算变化 -4.00%
+2025-08-19 10:07:34 - crypto.__main__ - INFO - BTC: 当前价格 $115832.90, 24h前价格 $117612.91, 计算变化 -1.51%
+2025-08-19 10:07:34 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:07:34 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:07:34] "GET /api/latest_prices?_t=1755569254537 HTTP/1.1" 200 -
+2025-08-19 10:07:39 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:07:39 - crypto.__main__ - INFO - ETH: 当前价格 $4292.04, 24h前价格 $4470.64, 计算变化 -4.00%
+2025-08-19 10:07:39 - crypto.__main__ - INFO - BTC: 当前价格 $115832.90, 24h前价格 $117612.91, 计算变化 -1.51%
+2025-08-19 10:07:39 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:07:39 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:07:39] "GET /api/latest_prices?_t=1755569259533 HTTP/1.1" 200 -
+2025-08-19 10:07:44 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:07:44 - crypto.__main__ - INFO - ETH: 当前价格 $4292.04, 24h前价格 $4470.64, 计算变化 -4.00%
+2025-08-19 10:07:44 - crypto.__main__ - INFO - BTC: 当前价格 $115832.90, 24h前价格 $117612.91, 计算变化 -1.51%
+2025-08-19 10:07:44 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:07:44 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:07:44] "GET /api/latest_prices?_t=1755569264543 HTTP/1.1" 200 -
+2025-08-19 10:07:47 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:07:47 - crypto.__main__ - INFO - ETH: 当前价格 $4292.04, 24h前价格 $4470.64, 计算变化 -4.00%
+2025-08-19 10:07:47 - crypto.__main__ - INFO - BTC: 当前价格 $115832.90, 24h前价格 $117612.91, 计算变化 -1.51%
+2025-08-19 10:07:47 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:07:47 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:07:47] "GET /api/latest_prices?_t=1755569267278 HTTP/1.1" 200 -
+2025-08-19 10:07:49 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:07:49 - crypto.__main__ - INFO - ETH: 当前价格 $4292.04, 24h前价格 $4470.64, 计算变化 -4.00%
+2025-08-19 10:07:49 - crypto.__main__ - INFO - BTC: 当前价格 $115832.90, 24h前价格 $117612.91, 计算变化 -1.51%
+2025-08-19 10:07:49 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:07:49 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:07:49] "GET /api/latest_prices?_t=1755569269537 HTTP/1.1" 200 -
+2025-08-19 10:07:54 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:07:54 - crypto.__main__ - INFO - ETH: 当前价格 $4292.04, 24h前价格 $4470.64, 计算变化 -4.00%
+2025-08-19 10:07:54 - crypto.__main__ - INFO - BTC: 当前价格 $115832.90, 24h前价格 $117612.91, 计算变化 -1.51%
+2025-08-19 10:07:54 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:07:54 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:07:54] "GET /api/latest_prices?_t=1755569274533 HTTP/1.1" 200 -
+2025-08-19 10:07:57 - crypto.realtime_processor - INFO - ==================================================
+2025-08-19 10:07:57 - crypto.realtime_processor - INFO - 开始新一轮实时数据处理
+2025-08-19 10:07:57 - crypto.realtime_processor - INFO - 开始实时数据处理和存储流程
+2025-08-19 10:07:57 - crypto.database - INFO - 成功连接到 MariaDB 数据库
+2025-08-19 10:07:57 - crypto.realtime_processor - INFO - 开始抓取实时加密货币数据
+2025-08-19 10:07:57 - crypto.scraper - INFO - 开始抓取 Bitcoin (BTC) 实时价格数据
+2025-08-19 10:07:57 - crypto.scraper - INFO - 正在请求 Bitcoin (BTC) 价格
+2025-08-19 10:07:59 - crypto.__main__ - INFO - Redis缓存中没有最新价格数据，从数据库获取
+2025-08-19 10:07:59 - crypto.__main__ - INFO - ETH: 当前价格 $4292.04, 24h前价格 $4470.64, 计算变化 -4.00%
+2025-08-19 10:07:59 - crypto.__main__ - INFO - BTC: 当前价格 $115832.90, 24h前价格 $117612.91, 计算变化 -1.51%
+2025-08-19 10:07:59 - crypto.__main__ - INFO - 最新价格数据已缓存到Redis
+2025-08-19 10:07:59 - werkzeug - INFO - 127.0.0.1 - - [19/Aug/2025 10:07:59] "GET /api/latest_prices?_t=1755569279538 HTTP/1.1" 200 -
+2025-08-19 10:08:00 - crypto.scraper - INFO - Bitcoin (BTC) 当前价格: $115,809.52
