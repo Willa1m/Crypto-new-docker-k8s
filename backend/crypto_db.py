@@ -24,7 +24,8 @@ class CryptoDatabase:
             'port': int(os.getenv('DB_PORT', 3306)),
             'charset': 'utf8mb4',
             'autocommit': True,
-            'use_unicode': True
+            'use_unicode': True,
+            'time_zone': '+00:00'  # 设置数据库连接使用UTC时区
         }
         
         self.connection_pool = None

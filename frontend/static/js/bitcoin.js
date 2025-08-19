@@ -88,10 +88,10 @@ function startRealTimePriceUpdates() {
         clearInterval(priceUpdateInterval);
     }
     
-    // 设置每5秒更新一次价格
+    // 设置每30秒更新一次价格（降低频率避免429错误）
     priceUpdateInterval = setInterval(() => {
         loadBitcoinPrice();
-    }, 5000);
+    }, 30000);
 }
 
 // 停止实时价格更新

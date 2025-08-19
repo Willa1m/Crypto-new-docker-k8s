@@ -73,7 +73,7 @@ class RealtimeDataProcessor:
                     'price': data['price'],
                     'change_24h': data['change_24h'],
                     'timestamp': data['timestamp'].isoformat(),
-                    'cached_at': datetime.now().isoformat()
+                    'cached_at': self.timestamp_manager.get_current_time().isoformat()
                 }
                 cache_ready_data.append(cache_item)
             
@@ -91,7 +91,7 @@ class RealtimeDataProcessor:
                     'price': data['price'],
                     'change_24h': data['change_24h'],
                     'timestamp': data['timestamp'].isoformat(),
-                    'cached_at': datetime.now().isoformat()
+                    'cached_at': self.timestamp_manager.get_current_time().isoformat()
                 }
                 
                 if self.cache_manager.cache_realtime_price(data['symbol'], cache_data):

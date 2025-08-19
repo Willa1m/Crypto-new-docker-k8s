@@ -4,6 +4,7 @@ import time
 from datetime import datetime
 import os
 import random
+import pytz
 from logger_config import get_crypto_logger
 
 # 配置日志
@@ -108,7 +109,7 @@ def get_crypto_price_coindesk(symbol, name):
                 'name': name,
                 'price': float(latest_data['VALUE']),
                 'change_24h': float(latest_data['CURRENT_DAY_CHANGE_PERCENTAGE']),
-                'timestamp': datetime.fromtimestamp(latest_data['VALUE_LAST_UPDATE_TS'])
+                'timestamp': datetime.fromtimestamp(latest_data['VALUE_LAST_UPDATE_TS'], tz=pytz.UTC)
             }
             
             logger.info(f"{name} ({symbol}) 当前价格: ${result['price']:,.2f}")
@@ -176,7 +177,7 @@ def get_historical_data_coindesk(symbol, timeframe="day"):
                     continue
                 historical_data.append({
                     'symbol': symbol,
-                    'date': datetime.fromtimestamp(entry['TIMESTAMP']),
+                    'date': datetime.fromtimestamp(entry['TIMESTAMP'], tz=pytz.UTC),
                     'open': float(entry['OPEN']),
                     'high': float(entry['HIGH']),
                     'low': float(entry['LOW']),

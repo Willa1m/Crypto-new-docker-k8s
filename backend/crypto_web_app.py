@@ -1,10 +1,13 @@
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from datetime import datetime, timedelta
 import os
 import threading
 import schedule
 import time
+import pytz
 from crypto_db import CryptoDatabase
 from crypto_analyzer import CryptoAnalyzer
 from simple_redis_manager import CryptoCacheManager
@@ -37,6 +40,15 @@ class CryptoWebApp:
                         template_folder=template_folder,
                         static_folder=static_folder)
         CORS(self.app)
+        
+        # 初始化限流器
+        self.limiter = Limiter(
+            app=self.app,
+            key_func=get_remote_address,
+            default_limits=["200 per day", "50 per hour"],
+            storage_uri="memory://"
+        )
+        
         self.db = CryptoDatabase()
         self.analyzer = CryptoAnalyzer()
         
@@ -62,19 +74,19 @@ class CryptoWebApp:
         self.app.route('/ethereum')(self.ethereum)
         self.app.route('/kline')(self.kline)
         
-        # API路由
+        # API路由（带限流）
         self.app.route('/api/health', methods=['GET'])(self.api_health_check)
-        self.app.route('/api/latest_prices')(self.api_latest_prices)
-        self.app.route('/api/price_history')(self.api_price_history)
-        self.app.route('/api/chart_data')(self.api_chart_data)
+        self.app.route('/api/latest_prices')(self.limiter.limit("30 per minute")(self.api_latest_prices))
+        self.app.route('/api/price_history')(self.limiter.limit("20 per minute")(self.api_price_history))
+        self.app.route('/api/chart_data')(self.limiter.limit("20 per minute")(self.api_chart_data))
         self.app.route('/api/btc_chart')(self.api_btc_chart)
         self.app.route('/api/eth_chart')(self.api_eth_chart)
         self.app.route('/api/kline_chart')(self.api_kline_chart)
-        self.app.route('/api/analysis')(self.api_analysis)
-        self.app.route('/api/btc_data')(self.api_btc_data)
-        self.app.route('/api/eth_data')(self.api_eth_data)
-        self.app.route('/api/kline_data')(self.api_kline_data)
-        self.app.route('/api/refresh_charts', methods=['POST'])(self.api_refresh_charts)
+        self.app.route('/api/analysis')(self.limiter.limit("10 per minute")(self.api_analysis))
+        self.app.route('/api/btc_data')(self.limiter.limit("15 per minute")(self.api_btc_data))
+        self.app.route('/api/eth_data')(self.limiter.limit("15 per minute")(self.api_eth_data))
+        self.app.route('/api/kline_data')(self.limiter.limit("10 per minute")(self.api_kline_data))
+        self.app.route('/api/refresh_charts', methods=['POST'])(self.limiter.limit("5 per minute")(self.api_refresh_charts))
         self.app.route('/api/system/status')(self.api_system_status)
         
         # 缓存管理API
@@ -84,6 +96,16 @@ class CryptoWebApp:
         # 错误处理
         self.app.errorhandler(404)(self.not_found)
         self.app.errorhandler(500)(self.internal_error)
+        
+        # 限流错误处理
+        @self.app.errorhandler(429)
+        def ratelimit_handler(e):
+            return jsonify({
+                'success': False,
+                'error': 'Rate limit exceeded',
+                'message': '请求过于频繁，请稍后再试',
+                'retry_after': getattr(e, 'retry_after', None)
+            }), 429
     
     def process_chart_data(self, data, symbol):
         """处理图表数据，计算三条曲线：价格、成交量、波动率"""
@@ -393,7 +415,7 @@ class CryptoWebApp:
     
     def api_health_check(self):
         """健康检查端点"""
-        return jsonify({'status': 'healthy', 'timestamp': datetime.now().isoformat()})
+        return jsonify({'status': 'healthy', 'timestamp': datetime.now(pytz.UTC).isoformat()})
     
     def api_latest_prices(self):
         """获取最新价格API"""
@@ -529,7 +551,7 @@ class CryptoWebApp:
             status = {
                 'database': db_status,
                 'redis': redis_status,
-                'timestamp': datetime.now().isoformat()
+                'timestamp': datetime.now(pytz.UTC).isoformat()
             }
             return jsonify({'success': True, 'data': status})
         except Exception as e:

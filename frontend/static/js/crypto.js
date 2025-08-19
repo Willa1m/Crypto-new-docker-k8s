@@ -70,24 +70,42 @@ function calculateLineIntersection(x1, y1, x2, y2, horizontalY) {
 let priceChart = null;
 let previousPrices = {}; // 存储上一次的价格数据
 let priceUpdateInterval = null; // 价格更新定时器
+let chartUpdateInterval = null; // 图表更新定时器
 let lastUpdateTime = null;
 let apiUsageInfo = null;
+let lastRequestTime = 0; // 上次请求时间
+const REQUEST_THROTTLE_MS = 2000; // 请求节流间隔（2秒）
+
+// 请求节流函数
+function throttleRequest(callback, delay = REQUEST_THROTTLE_MS) {
+    const now = Date.now();
+    if (now - lastRequestTime < delay) {
+        console.log('⏳ 请求被节流，跳过此次请求');
+        return;
+    }
+    lastRequestTime = now;
+    callback();
+}
 
 // 加载最新价格
 function loadLatestPrices() {
-    setStatus('正在获取最新价格...', 'loading');
+    throttleRequest(() => {
+        setStatus('正在获取最新价格...', 'loading');
 
-    // 添加时间戳参数绕过缓存
-    const timestamp = new Date().getTime();
-    fetch(`/api/latest_prices?_t=${timestamp}`, {
-        cache: 'no-cache',
-        headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-        }
-    })
+        // 添加时间戳参数绕过缓存
+        const timestamp = new Date().getTime();
+        fetch(`/api/latest_prices?_t=${timestamp}`, {
+            cache: 'no-cache',
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
+        })
         .then(response => {
             if (!response.ok) {
+                if (response.status === 429) {
+                    throw new Error('请求过于频繁，请稍后再试');
+                }
                 throw new Error('网络响应不正常');
             }
             return response.json();
@@ -103,8 +121,13 @@ function loadLatestPrices() {
         })
         .catch(error => {
             console.error('获取价格数据时出错:', error);
-            setStatus('获取价格数据失败', 'error');
+            if (error.message.includes('请求过于频繁')) {
+                setStatus('请求过于频繁，请稍后再试', 'warning');
+            } else {
+                setStatus('获取价格数据失败', 'error');
+            }
         });
+    });
 }
 
 // 显示价格数据
@@ -658,6 +681,9 @@ function startOptimizedUpdates() {
     if (priceUpdateInterval) {
         clearInterval(priceUpdateInterval);
     }
+    if (chartUpdateInterval) {
+        clearInterval(chartUpdateInterval);
+    }
     
     // 价格显示更新：每30秒检查一次
     priceUpdateInterval = setInterval(() => {
@@ -666,7 +692,7 @@ function startOptimizedUpdates() {
     }, 30000);
     
     // 图表数据更新：每5分钟更新一次
-    setInterval(() => {
+    chartUpdateInterval = setInterval(() => {
         loadChart(currentSymbol);
     }, 300000);
     
@@ -680,6 +706,10 @@ function stopRealTimePriceUpdates() {
     if (priceUpdateInterval) {
         clearInterval(priceUpdateInterval);
         priceUpdateInterval = null;
+    }
+    if (chartUpdateInterval) {
+        clearInterval(chartUpdateInterval);
+        chartUpdateInterval = null;
     }
 }
 
@@ -703,6 +733,9 @@ function handleVisibilityChange() {
 window.addEventListener('beforeunload', function() {
     if (priceUpdateInterval) {
         clearInterval(priceUpdateInterval);
+    }
+    if (chartUpdateInterval) {
+        clearInterval(chartUpdateInterval);
     }
 });
 
