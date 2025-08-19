@@ -171,8 +171,30 @@ class RealtimeDataProcessor:
         
         return None
 
+def run_realtime_processor_once():
+    """运行一次实时数据处理（供调度器调用）"""
+    processor = RealtimeDataProcessor()
+    
+    try:
+        logger.info("=" * 50)
+        logger.info("开始新一轮实时数据处理")
+        
+        # 处理和存储实时数据
+        success = processor.process_and_store_realtime_data()
+        
+        if success:
+            logger.info("实时数据处理成功")
+            return True
+        else:
+            logger.error("实时数据处理失败")
+            return False
+            
+    except Exception as e:
+        logger.error(f"实时数据处理器发生未预期错误: {str(e)}")
+        return False
+
 def run_realtime_processor():
-    """运行实时数据处理器"""
+    """运行实时数据处理器（无限循环模式）"""
     processor = RealtimeDataProcessor()
     
     while True:

@@ -8,14 +8,18 @@ import threading
 import schedule
 import time
 import pytz
+from dotenv import load_dotenv
+
+# 加载环境变量
+load_dotenv()
 from crypto_db import CryptoDatabase
 from crypto_analyzer import CryptoAnalyzer
 from simple_redis_manager import CryptoCacheManager
 from logger_config import get_crypto_logger
 # 导入后台处理模块
-from crypto_scraper import scrape_all_crypto_data as run_data_processing
+from data_processor import run_data_processing
 from crypto_analyzer import run_analysis
-from realtime_processor import run_realtime_processor
+from realtime_processor import run_realtime_processor_once
 from kline_processor import run_kline_processing
 
 # 配置日志
@@ -743,14 +747,14 @@ class CryptoWebApp:
         """设置定时任务"""
         logger.info("设置定时任务")
         
-        # 每5分钟运行一次数据收集
-        schedule.every(5).minutes.do(self.run_data_collection_task)
+        # 每2分钟运行一次数据收集
+        schedule.every(2).minutes.do(self.run_data_collection_task)
         
         # 每30秒运行一次实时数据处理
         schedule.every(30).seconds.do(self.run_realtime_task)
         
-        # 每分钟运行一次分析
-        schedule.every().minute.do(self.run_analysis_task)
+        # 每小时运行一次分析
+        schedule.every().hour.do(self.run_analysis_task)
         
         # 每天凌晨2点运行完整处理
         schedule.every().day.at("02:00").do(self.run_full_processing)
@@ -761,7 +765,7 @@ class CryptoWebApp:
         """运行实时数据处理任务"""
         logger.info("执行实时数据处理任务")
         try:
-            if run_realtime_processor():
+            if run_realtime_processor_once():
                 logger.info("实时数据处理任务完成")
             else:
                 logger.error("实时数据处理任务失败")
