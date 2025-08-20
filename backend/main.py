@@ -200,7 +200,8 @@ def show_system_status():
     
     # 检查输出目录
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    charts_dir = os.path.join(current_dir, 'static', 'charts')
+    project_root = os.path.dirname(current_dir)
+    charts_dir = os.path.join(project_root, 'frontend', 'static', 'charts')
     if os.path.exists(charts_dir):
         chart_files = os.listdir(charts_dir)
         print(f"  📈 图表文件: {len(chart_files)} 个")

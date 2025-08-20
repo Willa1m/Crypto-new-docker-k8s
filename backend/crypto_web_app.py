@@ -45,6 +45,17 @@ class CryptoWebApp:
                         static_folder=static_folder)
         CORS(self.app)
         
+        # 配置静态文件缓存控制
+        @self.app.after_request
+        def after_request(response):
+            # 对静态文件设置缓存控制头
+            if request.endpoint == 'static':
+                # 禁用缓存，强制浏览器每次都重新请求
+                response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+                response.headers['Pragma'] = 'no-cache'
+                response.headers['Expires'] = '0'
+            return response
+        
         # 初始化限流器
         self.limiter = Limiter(
             app=self.app,
@@ -54,7 +65,7 @@ class CryptoWebApp:
         )
         
         self.db = CryptoDatabase()
-        self.analyzer = CryptoAnalyzer()
+        self.analyzer = None  # 延迟初始化，避免启动时创建目录
         
         # 初始化Redis缓存管理器
         try:
@@ -99,6 +110,9 @@ class CryptoWebApp:
         # 缓存管理API
         self.app.route('/api/cache/stats')(self.api_cache_stats)
         self.app.route('/api/cache/clear', methods=['POST'])(self.api_clear_cache)
+        
+        # Vite客户端路由处理
+        self.app.route('/@vite/client')(self.vite_client_handler)
         
         # 错误处理
         self.app.errorhandler(404)(self.not_found)
@@ -422,6 +436,11 @@ class CryptoWebApp:
         from flask import send_from_directory
         return send_from_directory(self.app.static_folder, 'favicon.ico', mimetype='image/x-icon')
     
+    def vite_client_handler(self):
+        """处理Vite客户端请求，返回空响应避免404错误"""
+        from flask import Response
+        return Response('', status=204, mimetype='text/plain')
+    
     def api_health_check(self):
         """健康检查端点"""
         return jsonify({'status': 'healthy', 'timestamp': datetime.now(pytz.UTC).isoformat()})
@@ -629,8 +648,8 @@ class CryptoWebApp:
     def api_refresh_charts(self):
         """API: 刷新图表"""
         try:
-            # 运行分析器生成新的图表
-            self.analyzer.run_analysis()
+            # 调用独立的分析函数生成新的图表
+            run_analysis()
             
             return jsonify({
                 'success': True,

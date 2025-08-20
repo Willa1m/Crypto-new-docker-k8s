@@ -20,7 +20,7 @@ class CryptoAnalyzer:
         # 获取项目根目录路径
         current_dir = os.path.dirname(os.path.abspath(__file__))
         project_root = os.path.dirname(current_dir)
-        self.output_dir = os.path.join(project_root, "static", "charts")
+        self.output_dir = os.path.join(project_root, "frontend", "static", "charts")
         
         self.ensure_output_dir()
         
