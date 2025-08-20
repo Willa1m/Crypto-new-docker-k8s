@@ -90,25 +90,7 @@ services:
       - backend
     restart: unless-stopped
 
-  # Nginx反向代理
-  nginx:
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
-    container_name: crypto-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    networks:
-      - crypto-network
-    depends_on:
-      - frontend
-      - backend
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
-      timeout: 10s
-      retries: 3
+
 
 volumes:
   mysql_data:

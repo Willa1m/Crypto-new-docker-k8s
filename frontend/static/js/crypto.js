@@ -114,7 +114,10 @@ function loadLatestPrices() {
             if (response.success && response.data) {
                 displayPrices(response.data);
                 setStatus('价格数据已更新', 'info');
-                updateLastUpdated();
+                // 获取第一个数据项的时间戳用于显示更新时间
+                const firstItem = Array.isArray(response.data) ? response.data[0] : null;
+                const timestamp = firstItem ? firstItem.timestamp : null;
+                updateLastUpdated(timestamp);
             } else {
                 throw new Error('获取数据失败');
             }
@@ -277,7 +280,7 @@ function displayChart(data, symbol = 'BTC', timeframe = 'hour') {
         
         // 格式化数据并计算平均值
         const formattedData = data.map(item => ({
-            x: new Date(item.date).getTime(),
+            x: item.timestamp_ms || new Date(item.date).getTime(),
             y: parseFloat(item.close) || 0
         }));
         
@@ -569,11 +572,18 @@ function displayChartStats(symbol, prices, averagePrice) {
 }
 
 // 更新最后更新时间
-function updateLastUpdated() {
+function updateLastUpdated(timestamp) {
     const lastUpdate = document.getElementById('lastUpdate');
     if (lastUpdate) {
-        const now = new Date();
-        lastUpdate.textContent = now.toLocaleTimeString();
+        if (timestamp) {
+            // 直接使用API返回的时间戳（已经是正确的格式）
+            const dataTime = new Date(timestamp);
+            lastUpdate.textContent = dataTime.toLocaleTimeString();
+        } else {
+            // 如果没有时间戳，使用当前时间
+            const now = new Date();
+            lastUpdate.textContent = now.toLocaleTimeString();
+        }
     }
 }
 
@@ -688,6 +698,7 @@ function startOptimizedUpdates() {
     // 价格显示更新：每30秒检查一次
     priceUpdateInterval = setInterval(() => {
         loadLatestPrices();
+        // 定时更新时使用当前时间
         updateLastUpdated();
     }, 30000);
     

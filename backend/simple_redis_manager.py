@@ -153,8 +153,8 @@ class SimpleRedisManager:
 class CryptoCacheManager:
     """加密货币缓存管理器"""
     
-    def __init__(self):
-        self.redis = SimpleRedisManager()
+    def __init__(self, host=None, port=None, db=None, password=None):
+        self.redis = SimpleRedisManager(host=host, port=port, db=db, password=password)
         self.default_expire = 30  # 30秒默认过期时间，提高数据实时性
     
     def cache_price(self, symbol: str, price_data: Dict) -> bool:

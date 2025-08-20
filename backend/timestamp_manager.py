@@ -46,11 +46,12 @@ class TimestampManager:
             # 调整到日边界
             return adjusted_time.replace(hour=0, minute=0, second=0, microsecond=0)
         else:
+            # 对于实时数据，不进行边界调整，只减去延迟
             return adjusted_time
     
     def calculate_data_freshness(self, data_timestamp: datetime, timeframe: str) -> Tuple[timedelta, bool]:
         """计算数据新鲜度"""
-        expected_latest = self.get_expected_latest_timestamp(timeframe)
+        current_time = self.get_current_time()
         
         # 如果数据时间戳是字符串，转换为datetime
         if isinstance(data_timestamp, str):
@@ -60,7 +61,8 @@ class TimestampManager:
         if data_timestamp.tzinfo is None:
             data_timestamp = data_timestamp.replace(tzinfo=self.timezone)
         
-        lag = expected_latest - data_timestamp
+        # 直接计算当前时间与数据时间的差值
+        lag = current_time - data_timestamp
         
         # 定义可接受的延迟阈值
         acceptable_thresholds = {

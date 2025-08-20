@@ -145,6 +145,7 @@ class CryptoWebApp:
             # 价格数据
             price_data.append({
                 'date': item['date'],
+                'timestamp_ms': item.get('timestamp_ms'),
                 'price': item['close'],
                 'high': item['high'],
                 'low': item['low'],
@@ -154,6 +155,7 @@ class CryptoWebApp:
             # 成交量数据
             volume_data.append({
                 'date': item['date'],
+                'timestamp_ms': item.get('timestamp_ms'),
                 'volume': item['volume']
             })
             
@@ -169,6 +171,7 @@ class CryptoWebApp:
                 
                 volatility_data.append({
                     'date': item['date'],
+                    'timestamp_ms': item.get('timestamp_ms'),
                     'volatility': volatility,
                     'volatility_percent': (volatility / mean_price) * 100 if mean_price > 0 else 0
                 })
@@ -298,55 +301,49 @@ class CryptoWebApp:
                 logger.warning(f"从Redis缓存获取图表数据失败: {e}")
         
         # 从数据库获取数据
-        connection = None
         try:
-            # 从连接池获取连接
-            connection = self.db.get_connection()
-            if not connection:
+            if not symbol:
+                logger.warning("未指定symbol，无法获取图表数据")
+                return []
+            
+            # 直接使用数据库的get_chart_data方法，它已经包含了时间戳处理逻辑
+            if self.db.connect():
+                data = self.db.get_chart_data(symbol, timeframe)
+                self.db.disconnect()
+                
+                if not data or len(data) == 0:
+                    logger.warning(f"数据库中没有{symbol}的{timeframe}级数据")
+                    return []
+                
+                # 数据库已经返回了正确格式的数据，包含timestamp_ms字段
+                result = []
+                for item in data:
+                    result.append({
+                        'symbol': symbol,
+                        'date': item['date'],
+                        'timestamp_ms': item['timestamp_ms'],
+                        'open': item['open'],
+                        'high': item['high'],
+                        'low': item['low'],
+                        'close': item['close'],
+                        'volume': item['volume']
+                    })
+                
+                # 将数据缓存到Redis（缓存5分钟）
+                if self.redis_manager and result:
+                    try:
+                        self.redis_manager.cache_chart_data(symbol, timeframe, result)
+                        logger.info(f"{symbol}的{timeframe}图表数据已缓存到Redis")
+                    except Exception as e:
+                        logger.warning(f"缓存图表数据到Redis失败: {e}")
+                
+                return result
+            else:
                 logger.error("数据库连接失败")
                 return []
-            
-            # 获取历史数据
-            data = self.db.get_historical_data(timeframe, symbol, limit, connection=connection)
-            
-            if not data or len(data) == 0:
-                logger.warning(f"数据库中没有{timeframe}级数据")
-                return []
-            
-            # 转换数据格式
-            result = []
-            for item in data:
-                # 数据库返回的是tuple格式: (symbol, date, open_price, high_price, low_price, close_price, volume)
-                symbol_name, date, open_price, high_price, low_price, close_price, volume = item
-                result.append({
-                    'symbol': symbol_name,
-                    'date': date.strftime('%Y-%m-%d %H:%M:%S') if hasattr(date, 'strftime') else str(date),
-                    'open': float(open_price),
-                    'high': float(high_price),
-                    'low': float(low_price),
-                    'close': float(close_price),
-                    'volume': float(volume) if volume is not None else 0.0
-                })
-            
-            # 将数据缓存到Redis（缓存5分钟）
-            if self.redis_manager and result and symbol:
-                try:
-                    self.redis_manager.cache_chart_data(symbol, timeframe, result)
-                    logger.info(f"{symbol}的{timeframe}图表数据已缓存到Redis")
-                except Exception as e:
-                    logger.warning(f"缓存图表数据到Redis失败: {e}")
-            
-            return result
         except Exception as e:
             logger.error(f"获取图表数据时出错: {str(e)}")
             return []
-        finally:
-            # 确保连接被正确释放回连接池
-            if connection:
-                try:
-                    connection.close()
-                except:
-                    pass
     
     def get_cache_stats(self):
         """获取缓存统计信息"""
@@ -484,7 +481,9 @@ class CryptoWebApp:
     def api_btc_chart(self):
         """获取BTC图表数据"""
         try:
-            chart_data = self.get_chart_data('hour', 'BTC', 100)
+            timeframe = request.args.get('timeframe', 'hour')
+            limit = int(request.args.get('limit', 100))
+            chart_data = self.get_chart_data(timeframe, 'BTC', limit)
             return jsonify({'success': True, 'data': chart_data})
         except Exception as e:
             logger.error(f"获取BTC图表数据失败: {e}")
@@ -493,7 +492,9 @@ class CryptoWebApp:
     def api_eth_chart(self):
         """获取ETH图表数据"""
         try:
-            chart_data = self.get_chart_data('hour', 'ETH', 100)
+            timeframe = request.args.get('timeframe', 'hour')
+            limit = int(request.args.get('limit', 100))
+            chart_data = self.get_chart_data(timeframe, 'ETH', limit)
             return jsonify({'success': True, 'data': chart_data})
         except Exception as e:
             logger.error(f"获取ETH图表数据失败: {e}")

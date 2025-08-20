@@ -173,11 +173,11 @@ function displayEthereumPrice(data) {
                 <div class="price-change ${changeClass}">
                     ${changeIcon} ${Math.abs(priceChange).toFixed(2)}% (24h)
                 </div>
-                <div class="price-timestamp">
-                    更新时间: ${ethData.timestamp}
-                </div>
             </div>
         `;
+        
+        // 更新最后更新时间
+        updateLastUpdated(ethData.timestamp);
         
         // 存储当前价格
         previousEthPrice = currentPrice;
@@ -209,7 +209,9 @@ function loadEthereumCharts() {
             if (response.success && response.data) {
                 displayEthereumCharts(response.data);
                 setStatus('数据加载完成', 'info');
-                updateLastUpdated();
+                // 从数据中获取时间戳
+                const timestamp = response.data.length > 0 ? response.data[0].timestamp : null;
+                updateLastUpdated(timestamp);
             } else {
                 throw new Error('获取数据失败');
             }
@@ -244,7 +246,7 @@ function displayPriceChart(priceData) {
     
     // 准备数据
     const chartData = priceData.map(item => ({
-        x: new Date(item.date).getTime(),
+        x: item.timestamp_ms || new Date(item.date).getTime(),
         y: item.price,
         o: item.open,
         h: item.high,
@@ -416,7 +418,7 @@ function displayVolumeChart(volumeData) {
     
     // 准备数据
     const chartData = volumeData.map(item => ({
-        x: new Date(item.date).getTime(),
+        x: item.timestamp_ms || new Date(item.date).getTime(),
         y: item.volume
     }));
     
@@ -565,7 +567,7 @@ function displayVolatilityChart(volatilityData) {
     
     // 准备数据
     const chartData = volatilityData.map(item => ({
-        x: new Date(item.date).getTime(),
+        x: item.timestamp_ms || new Date(item.date).getTime(),
         y: item.volatility_percent
     }));
     
@@ -759,11 +761,18 @@ function getDisplayFormats() {
 }
 
 // 更新最后更新时间
-function updateLastUpdated() {
+function updateLastUpdated(timestamp) {
     const lastUpdate = document.getElementById('lastUpdate');
     if (lastUpdate) {
-        const now = new Date();
-        lastUpdate.textContent = now.toLocaleTimeString();
+        if (timestamp) {
+            // 直接使用API返回的时间戳（已经是正确的格式）
+            const dataTime = new Date(timestamp);
+            lastUpdate.textContent = dataTime.toLocaleTimeString();
+        } else {
+            // 如果没有时间戳，使用当前时间
+            const now = new Date();
+            lastUpdate.textContent = now.toLocaleTimeString();
+        }
     }
 }
 

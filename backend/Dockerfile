@@ -39,9 +39,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 复制应用代码
 COPY ./backend .
 
-# 复制项目根目录的templates和static目录
-COPY ./templates ./templates
-COPY ./static ./static
+# 复制frontend目录的templates和static目录
+COPY ./frontend/templates ./templates
+COPY ./frontend/static ./static
 
 # 创建必要的目录
 RUN mkdir -p data/kline_data logs

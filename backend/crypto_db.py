@@ -532,7 +532,7 @@ class CryptoDatabase:
         SELECT date, open_price, high_price, low_price, close_price, volume
         FROM {table_name}
         WHERE symbol = %s
-        ORDER BY date ASC
+        ORDER BY date DESC
         LIMIT 100
         """
         
@@ -598,7 +598,7 @@ class CryptoDatabase:
         SELECT date, open_price, high_price, low_price, close_price, volume
         FROM hour_data
         WHERE symbol = %s
-        ORDER BY date ASC
+        ORDER BY date DESC
         LIMIT 100
         """
         
