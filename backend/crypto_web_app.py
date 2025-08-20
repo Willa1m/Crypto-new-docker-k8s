@@ -78,6 +78,9 @@ class CryptoWebApp:
         self.app.route('/ethereum')(self.ethereum)
         self.app.route('/kline')(self.kline)
         
+        # Favicon路由
+        self.app.route('/favicon.ico')(self.favicon)
+        
         # API路由（带限流）
         self.app.route('/api/health', methods=['GET'])(self.api_health_check)
         self.app.route('/api/latest_prices')(self.limiter.limit("30 per minute")(self.api_latest_prices))
@@ -413,6 +416,11 @@ class CryptoWebApp:
     def kline(self):
         """K线图页面"""
         return render_template('kline.html')
+    
+    def favicon(self):
+        """Favicon处理"""
+        from flask import send_from_directory
+        return send_from_directory(self.app.static_folder, 'favicon.ico', mimetype='image/x-icon')
     
     def api_health_check(self):
         """健康检查端点"""

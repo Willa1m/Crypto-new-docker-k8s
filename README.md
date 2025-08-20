@@ -370,7 +370,7 @@ curl http://localhost:8000/
 
 - **项目仓库**: [GitHub Repository]
 - **问题反馈**: [Issues]
-- **技术支持**: [Support Email]
+- **技术支持**: [haorantu@bu.edu]
 
 ## 📄 许可证
 
