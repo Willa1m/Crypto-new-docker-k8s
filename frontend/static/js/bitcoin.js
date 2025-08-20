@@ -245,6 +245,12 @@ function displayPriceChart(priceData) {
         priceChart.destroy();
     }
     
+    // 数据校验：确保priceData是有效数组
+    if (!priceData || !Array.isArray(priceData) || priceData.length === 0) {
+        console.warn('价格数据为空或无效，跳过图表渲染');
+        return;
+    }
+    
     // 准备数据 - 直接使用后端提供的timestamp_ms
     const chartData = priceData.map(item => ({
         x: item.timestamp_ms || new Date(item.date).getTime(),
@@ -256,7 +262,11 @@ function displayPriceChart(priceData) {
     }));
     
     // 计算平均价格
-    const prices = chartData.map(item => item.y);
+    const prices = chartData.map(item => item.y).filter(price => price != null && !isNaN(price));
+    if (prices.length === 0) {
+        console.warn('没有有效的价格数据，跳过图表渲染');
+        return;
+    }
     const averagePrice = prices.reduce((sum, price) => sum + price, 0) / prices.length;
     
     // 计算与平均值的交点并创建分段数据
@@ -421,6 +431,12 @@ function displayVolumeChart(volumeData) {
         volumeChart.destroy();
     }
     
+    // 数据校验：确保volumeData是有效数组
+    if (!volumeData || !Array.isArray(volumeData) || volumeData.length === 0) {
+        console.warn('成交量数据为空或无效，跳过图表渲染');
+        return;
+    }
+    
     // 准备数据
     const chartData = volumeData.map(item => ({
         x: item.timestamp_ms || new Date(item.date).getTime(),
@@ -428,7 +444,11 @@ function displayVolumeChart(volumeData) {
     }));
     
     // 计算平均成交量
-    const volumes = chartData.map(item => item.y);
+    const volumes = chartData.map(item => item.y).filter(volume => volume != null && !isNaN(volume));
+    if (volumes.length === 0) {
+        console.warn('没有有效的成交量数据，跳过图表渲染');
+        return;
+    }
     const averageVolume = volumes.reduce((sum, volume) => sum + volume, 0) / volumes.length;
     
     // 创建颜色数组，根据是否高于平均值决定颜色
@@ -570,6 +590,12 @@ function displayVolatilityChart(volatilityData) {
         volatilityChart.destroy();
     }
     
+    // 数据校验：确保volatilityData是有效数组
+    if (!volatilityData || !Array.isArray(volatilityData) || volatilityData.length === 0) {
+        console.warn('波动率数据为空或无效，跳过图表渲染');
+        return;
+    }
+    
     // 准备数据
     const chartData = volatilityData.map(item => ({
         x: item.timestamp_ms || new Date(item.date).getTime(),
@@ -577,7 +603,11 @@ function displayVolatilityChart(volatilityData) {
     }));
     
     // 计算平均波动率
-    const volatilities = chartData.map(item => item.y);
+    const volatilities = chartData.map(item => item.y).filter(vol => vol != null && !isNaN(vol));
+    if (volatilities.length === 0) {
+        console.warn('没有有效的波动率数据，跳过图表渲染');
+        return;
+    }
     const averageVolatility = volatilities.reduce((sum, vol) => sum + vol, 0) / volatilities.length;
     
     // 使用交点算法计算分段数据

@@ -574,8 +574,10 @@ class CryptoWebApp:
             if self.redis_manager:
                 try:
                     # 检查Redis管理器是否有有效连接
-                    if hasattr(self.redis_manager, 'redis') and self.redis_manager.redis:
-                        self.redis_manager.redis.ping()
+                    if hasattr(self.redis_manager, 'redis') and self.redis_manager.redis and self.redis_manager.redis.is_connected():
+                        redis_status = 'connected'
+                    elif hasattr(self.redis_manager, 'redis_client') and self.redis_manager.redis_client:
+                        self.redis_manager.redis_client.ping()
                         redis_status = 'connected'
                 except Exception:
                     redis_status = 'disconnected'
